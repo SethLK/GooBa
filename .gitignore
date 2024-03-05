@@ -1,0 +1,11 @@
+# Python specific
+__pycache__/
+*.pyc
+
+# IDE specific
+.idea/
+
+# Environment specific
+venv/
+
+output/
