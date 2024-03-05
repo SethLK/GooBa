@@ -13,6 +13,9 @@ class InterruptableHTTPServer(HTTPServer):
             self.server_close()
             print("\nServer stopped.")
 
+def open_browser(url):
+    webbrowser.open(url)
+
 def run_dev_server(port=8000):
     print("Starting development server at http://localhost:{}...".format(port))
     original_dir = os.getcwd()
@@ -20,27 +23,29 @@ def run_dev_server(port=8000):
         os.mkdir("output")  # Create the output directory if it doesn't exist
         with open("output/index.html", "w") as index_file:
             index_file.write(
-                "<!DOCTYPE html>\n<html>\n<head>\n<title>Index</title>\n</head>\n<body>\n<h1>Hello World!</h1>\n</body>\n</html>")
+                "<!DOCTYPE html>\n")
 
     os.chdir("output")
     server_address = ('', port)
     httpd = InterruptableHTTPServer(server_address, SimpleHTTPRequestHandler)
 
-    # Open browser window
-    webbrowser.open_new_tab("http://localhost:{}".format(port))
+    # Open browser window in a separate thread
+    threading.Thread(target=open_browser, args=("http://localhost:{}".format(port),)).start()
 
-    # Start the server in a separate thread
-    server_thread = threading.Thread(target=httpd.serve_forever)
-    server_thread.daemon = True
-    server_thread.start()
+    # Start the server in a separate thread if not already started
+    if not getattr(run_dev_server, "server_started", False):
+        server_thread = threading.Thread(target=httpd.serve_forever)
+        server_thread.daemon = True
+        server_thread.start()
+        run_dev_server.server_started = True
 
     while True:
         key = input("Press 'q' to quit, 'r' to reload: ")
         if key.lower() == 'q':
             break
         elif key.lower() == 'r':
-            # Reload the page
-            webbrowser.reload()
+            # Refresh the page
+            open_browser("http://localhost:{}".format(port))
         else:
             print("Invalid input. Press 'q' to quit, 'r' to reload.")
 
