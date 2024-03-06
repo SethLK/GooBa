@@ -20,7 +20,7 @@ def run_dev_server(port=8000):
     print("Starting development server at http://localhost:{}...".format(port))
     original_dir = os.getcwd()
     if not os.path.exists("output"):
-        os.mkdir("output")  # Create the output directory if it doesn't exist
+        os.mkdir("output")
         with open("output/index.html", "w") as index_file:
             index_file.write(
                 "<!DOCTYPE html>\n")

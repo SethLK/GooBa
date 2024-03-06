@@ -9,6 +9,9 @@ class HTMLElement:
 
     def __str__(self):
         attribute_string = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
+        if 'class_name' in self.attributes:
+            attribute_string += f' class="{self.attributes["class_name"]}"'
+
         if self.text is not None:
             return f'<{self.tag} {attribute_string}>{self.text}</{self.tag}>'
         else:
@@ -19,4 +22,3 @@ class HTMLElement:
             return self.__str__() + other.__str__()
         else:
             return self.__str__() + str(other)
-
