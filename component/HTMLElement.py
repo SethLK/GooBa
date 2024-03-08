@@ -4,9 +4,6 @@ class HTMLElement:
         self.attributes = attributes
         self.text = None
 
-    def set_text(self, text):
-        self.text = text
-
     def __str__(self):
         attribute_string = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
         if 'class_name' in self.attributes:
