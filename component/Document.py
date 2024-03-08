@@ -1,10 +1,10 @@
 from hmr.hmr import javascript
 
-
 class Document:
     def __init__(self):
         self.head = ""
         self.body_ = ""
+        self.styles = []
 
     def title(self, text):
         self.head += f"<title>{text}</title>\n"
@@ -16,15 +16,23 @@ class Document:
         meta_tag += "/>\n"
         self.head += meta_tag
 
+    def add_style(self, *style):
+        self.styles.extend(style)
+
     def body(self, *elements: object) -> object:
         modified_elements = '\n'.join([str(element) for element in elements])
         self.body_ = f"{modified_elements}"
 
     def build(self):
         # Constructing the HTML content
+        styles_str = '\n'.join(map(str, self.styles))  # Concatenate all styles into a single string
         html_content = f"""
+        <!DOCTYPE html>
         <html>
         <head>
+        <style>
+        {styles_str}
+        </style>
         {self.head}
         </head>
         <body>
