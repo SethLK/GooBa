@@ -5,6 +5,7 @@ import threading
 import webbrowser
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
+
 class InterruptableHTTPServer(HTTPServer):
     def serve_forever(self):
         try:
@@ -13,8 +14,10 @@ class InterruptableHTTPServer(HTTPServer):
             self.server_close()
             print("\nServer stopped.")
 
+
 def open_browser(url):
     webbrowser.open(url)
+
 
 def run_dev_server(port=8000):
     print("Starting development server at http://localhost:{}...".format(port))
@@ -43,9 +46,6 @@ def run_dev_server(port=8000):
         key = input("Press 'q' to quit, 'r' to reload: ")
         if key.lower() == 'q':
             break
-        elif key.lower() == 'r':
-            # Refresh the page
-            open_browser("http://localhost:{}".format(port))
         else:
             print("Invalid input. Press 'q' to quit, 'r' to reload.")
 
@@ -53,8 +53,10 @@ def run_dev_server(port=8000):
     print("\nServer stopped.")
     os.chdir(original_dir)
 
+
 def build():
     pass
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 2 and sys.argv[1] == "dev":
