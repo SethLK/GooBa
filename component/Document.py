@@ -1,5 +1,5 @@
 from hmr.hmr import javascript
-from router.route import script
+from router.router import script
 
 class Document:
     def __init__(self):

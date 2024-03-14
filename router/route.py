@@ -1,6 +1,4 @@
 script = """
-
-
 function handleRoute() {
     const path = window.location.pathname;
     switch (path) {
@@ -56,35 +54,12 @@ function action(route) {
 handleLocation();
 """
 
+
+
 class Route:
-    def __init__(self, path, content):
-        self.path = path
-        self.content = content
-
-
-class Router:
-    def __init__(self):
-        self.routes = []
-
-    def add_route(self, route):
-        self.routes.append(route)
-
-    def handle_route(self, path):
-        for route in self.routes:
-            if route.path == path:
-                return route.content
-        return "<h1>404 - Not Found</h1>"
-
-
-# Usage example
-router = Router()
-router.add_route(Route("/", "<h1>Home Page</h1>"))
-router.add_route(Route("/about", "<h1>About Page</h1>"))
-router.add_route(Route("/contact", "<h1>Contact Page</h1>"))
-
-# You can add more routes as needed
-
-# Example of handling a route
-path = "/about"
-content = router.handle_route(path)
-print(content)  # Output: <h1>About Page</h1>
+    routes = {
+        "/": "<h1>Home Page</h1>",
+        "/about": "<h1>About Page</h1>",
+        "/contact": "<h1>Contact Page</h1>"
+    }
+    def page(self, path, content):
