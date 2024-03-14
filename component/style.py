@@ -13,3 +13,13 @@ class Style:
             css += f"    {prop.replace('_', '-')} : {value};\n"
         css += "}\n"
         return css
+
+
+#external style
+
+class Css:
+    def __init__(self, style, file):
+        self.style = style
+        self.file = file
+
+

@@ -10,22 +10,14 @@ doc.title("Testing")
 
 parent = Parent("div")
 
-child_h1 = HTMLElement("h1", id="demo")
-child_h1.text = "Hello There"
+home_ = HTMLElement("a", href="/")
+home_.text = "Home"
 
-style.add_property("color", "red")
+google = HTMLElement("a", href="https://www.google.com")
+google.text = "Google"
 
-parent.add_child(child_h1)
+parent.add_child(home_, google)
 
-h1 = HTMLElement("h1", class_name="demo")
-h1.text = "HEllo H1"
-
-h1_style = Style(".demo")
-h1_style.add_property("color", "blue")
-h1_style.add_property("background-color", "black")
-
-doc.add_style(style, h1_style)
-
-doc.body(parent, h1)
+doc.body(parent)
 
 doc.build()

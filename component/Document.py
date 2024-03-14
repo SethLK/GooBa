@@ -1,4 +1,5 @@
 from hmr.hmr import javascript
+from router.route import script
 
 class Document:
     def __init__(self):
@@ -35,9 +36,13 @@ class Document:
         {self.head}
         </head>
         <body>
+        <div id="root">
         {self.body_}
+        </div>
         </body>
-        {javascript}
+        
+        <script src="./hmr.js"></script>
+        <script src="./script.js"></script>
         </html>
         """
 
@@ -45,3 +50,9 @@ class Document:
         with open('./output/index.html', 'w') as file:
             file.write(html_content)
             print(html_content)
+
+        with open('./output/script.js', 'w') as file:
+            file.write(script)
+
+        with open('./output/hmr.js', 'w') as file:
+            file.write(javascript)
