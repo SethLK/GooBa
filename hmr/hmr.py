@@ -1,5 +1,4 @@
 javascript = """
-        <script>
             // Function to reload the page
             function reloadPage() {
                 window.location.reload();
@@ -25,5 +24,5 @@ javascript = """
 
             // Call the watchForChanges function periodically
             setInterval(watchForChanges, 1000);
-        </script>
+
         """

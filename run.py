@@ -19,7 +19,7 @@ def open_browser(url):
     webbrowser.open(url)
 
 
-def run_dev_server(port=8000):
+def run_dev_server(port=8080):
     print("Starting development server at http://localhost:{}...".format(port))
     original_dir = os.getcwd()
     if not os.path.exists("output"):

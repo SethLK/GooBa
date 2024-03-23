@@ -51,8 +51,7 @@ class Document:
             file.write(html_content)
             print(html_content)
 
-        with open('./output/script.js', 'w') as file:
-            file.write(script)
+
 
         with open('./output/hmr.js', 'w') as file:
             file.write(javascript)
