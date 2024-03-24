@@ -11,6 +11,8 @@ route = Route()
 # Adding title to document
 doc.title("Testing")
 
+root = Parent("div", id="root")
+
 # Creating parent div
 parent = Parent("div")
 
@@ -21,15 +23,28 @@ home_.text = "Home"
 about = HTMLElement("a", href="/about")
 about.text = "About"
 
-parent.add_child(home_, about)
+contact = HTMLElement("a", href="/contact")
+contact.text = "Contact"
 
-# Adding about content
-about_content = HTMLElement("h1")
-about_content.text = "About"
+navBar = Parent("nav")
+navBar.add_child(home_, about, contact)
 
-# Rendering routes
-route.render("/", parent)
-route.render("/about", about_content)
+parent.add_child(navBar)
+
+homePage = HTMLElement("h1")
+homePage.text = "Home Page"
+
+aboutPage = HTMLElement("h1")
+aboutPage.text = "About page"
+
+contactPage = HTMLElement("h1")
+contactPage.text = "Contact Page"
+
+
+route.render("/", homePage)
+route.render("/about", aboutPage)
+route.render("/contact", contactPage)
+
 
 # Writing JavaScript code to file
 with open('./output/script.js', 'w') as file:
@@ -37,7 +52,7 @@ with open('./output/script.js', 'w') as file:
 
 # Adding style and body to document
 doc.add_style(style)
-doc.body(parent)
+doc.body(parent, root)
 
 # Building the document
 doc.build()

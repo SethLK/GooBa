@@ -36,9 +36,7 @@ class Document:
         {self.head}
         </head>
         <body>
-        <div id="root">
         {self.body_}
-        </div>
         </body>
         
         <script src="./hmr.js"></script>
