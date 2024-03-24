@@ -40,15 +40,11 @@ aboutPage.text = "About page"
 contactPage = HTMLElement("h1")
 contactPage.text = "Contact Page"
 
-
 route.render("/", homePage)
 route.render("/about", aboutPage)
 route.render("/contact", contactPage)
 
-
-# Writing JavaScript code to file
-with open('./output/script.js', 'w') as file:
-    file.write(route.run())
+route.run()
 
 # Adding style and body to document
 doc.add_style(style)

@@ -57,4 +57,5 @@ function action(route) {{
 
 handleLocation();
 """
-        return js_code
+        with open('./output/script.js', 'w') as file:
+            file.write(js_code)

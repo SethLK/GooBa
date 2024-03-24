@@ -25,8 +25,7 @@ class Document:
         self.body_ = f"{modified_elements}"
 
     def build(self):
-        # Constructing the HTML content
-        styles_str = '\n'.join(map(str, self.styles))  # Concatenate all styles into a single string
+        styles_str = '\n'.join(map(str, self.styles))
         html_content = f"""<!DOCTYPE html>
         <html>
         <head>
