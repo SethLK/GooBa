@@ -1,8 +1,10 @@
+import requests
 from component.parent import Parent
 from component.Document import Document
 from component.HTMLElement import HTMLElement
 from component.style import Style
 from router.route import Route
+from component.form import Form, Label, InputField
 
 doc = Document()
 style = Style("#demo")
@@ -11,44 +13,33 @@ route = Route()
 # Adding title to document
 doc.title("Testing")
 
+# Create the root and parent div
 root = Parent("div", id="root")
 
-# Creating parent div
-parent = Parent("div")
+UserNameLabel = Label("Username\n", "Username")
+PasswordLabel = Label("Password\n", "password")
 
-# Adding home and about links
-home_ = HTMLElement("a", href="/")
-home_.text = "Home"
 
-about = HTMLElement("a", href="/about")
-about.text = "About"
+form = Form()
 
-contact = HTMLElement("a", href="/contact")
-contact.text = "Contact"
+username = InputField("Username\n")
+username.label = UserNameLabel
 
-navBar = Parent("nav")
-navBar.add_child(home_, about, contact)
+password = InputField("Password\n")
+password.label = PasswordLabel
+password.type = "password"
 
-parent.add_child(navBar)
+submit = InputField("Submit")
+submit.type = "submit"
 
-homePage = HTMLElement("h1")
-homePage.text = "Home Page"
 
-aboutPage = HTMLElement("h1")
-aboutPage.text = "About page"
+form.addFields(username, password, submit)
 
-contactPage = HTMLElement("h1")
-contactPage.text = "Contact Page"
+root.add_child(form)
 
-route.render("/", homePage)
-route.render("/about", aboutPage)
-route.render("/contact", contactPage)
 
-route.run()
-
-# Adding style and body to document
 doc.add_style(style)
-doc.body(parent, root)
+doc.body(root)
 
-# Building the document
+# Build the document
 doc.build()

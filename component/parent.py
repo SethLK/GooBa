@@ -9,5 +9,5 @@ class Parent:
 
     def __str__(self):
         attribute_string = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
-        children_string = '\n'.join(["\t" + str(child) for child in self.children])  # Indent children with tabs
+        children_string = '\n'.join(["\t" + str(child) for child in self.children])
         return f'<{self.tag} {attribute_string}>\n{children_string}\n\t</{self.tag}>\n'
