@@ -3,8 +3,8 @@
 class Form:
     def __init__(self):
         self.fields = []
-        self.action = None
-        self.method = None
+        self.action = ''
+        self.method = ''
 
     def addField(self, field):
         self.fields.append(str(field))
@@ -19,6 +19,7 @@ class Form:
             form += str(field) + "\n"
         form += "</form>\n"
         return form
+
 
 class Label:
     def __init__(self, text, for_i=None):

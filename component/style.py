@@ -15,11 +15,10 @@ class Style:
         return css
 
 
-#external style
+# external style
+
 
 class Css:
     def __init__(self, style, file):
         self.style = style
         self.file = file
-
-

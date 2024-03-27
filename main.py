@@ -21,6 +21,7 @@ PasswordLabel = Label("Password\n", "password")
 
 
 form = Form()
+form.method = "POST"
 
 username = InputField("Username\n")
 username.label = UserNameLabel
