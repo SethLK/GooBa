@@ -20,6 +20,20 @@ class Form:
         form += "</form>\n"
         return form
 
+class Label:
+    def __init__(self, text, for_i=None):
+        self.text = text
+        self.for_input = for_i
+
+    def __str__(self):
+        if '\n' in self.text:
+            text_with_br = self.text.replace('\n', '')
+            return f'<label for="{self.for_input}">{text_with_br}</label><br>\n'
+        elif self.for_input:
+            return f'<label for="{self.for_input}">{self.text}</label>\n'
+        else:
+            return f'<label>{self.text}</label>\n'
+
 
 class InputField:
     def __init__(self, name, **attributes):
