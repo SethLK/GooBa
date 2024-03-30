@@ -1,26 +1,25 @@
-class Route:
-    def __init__(self):
-        self.routes = {}
+routes = {
+    "/": "<h1>Home Page</h1>",
+    "/about": "<h1>About Page</h1>",
+    "/contact": "<h1>Contact Page</h1>"
+}
 
-    def render(self, route, content):
-        self.routes[route] = content
+print(f'Routes are {routes}')
 
-    def run(self):
-        route_cases = ""
-        for path, content in self.routes.items():
-            route_cases += f"""
-                case '{path}':
-                    renderContent(`{content}`);  // Use backticks for multiline strings and template literals
-                    break;
-            """
+Based = f"""
 
-        js_code = f"""
+
 function handleRoute() {{
     const path = window.location.pathname;
     switch (path) {{
-        {route_cases}
+        case '/about':
+            renderContent("<h1>About Page</h1>");
+            break;
+        case '/contact':
+            renderContent("<h1>Contact Page</h1>");
+            break;
         default:
-            renderContent("<h1>404 Page</h1>");   
+            renderContent("<h1>Home Page</h1>");
             break;
     }}
 }}
@@ -44,11 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {{
     }});
 }});
 
+
 window.addEventListener('popstate', handleRoute);
 
 function handleLocation() {{
     handleRoute();
 }}
+
+const routes = {routes};
 
 function action(route) {{
     history.pushState(null, null, route);
@@ -57,5 +59,4 @@ function action(route) {{
 
 handleLocation();
 """
-        with open('./output/script.js', 'w') as file:
-            file.write(js_code)
+print(Based)

@@ -17,8 +17,27 @@ class Style:
 
 # external style
 
-
 class Css:
-    def __init__(self, style, file):
+    def __init__(self, style, fileName=None):
         self.style = style
-        self.file = file
+        self.fileName = fileName
+
+    def render(self):
+        with open(f'./output/{self.fileName}.css', 'w') as file:
+            file.write(self.style)
+
+    def apply(self):
+        if self.fileName:
+            link_tag = f'<link rel="stylesheet" type="text/css" href="{self.fileName}.css">'
+            return link_tag
+        elif self.style:
+            style_tag = f'<style>{self.style}</style>'
+            return style_tag
+        else:
+            return ''
+
+    def __str__(self):
+        return self.style
+
+    def remove(self):
+        pass

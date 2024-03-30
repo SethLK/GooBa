@@ -1,46 +1,56 @@
-import requests
 from component.parent import Parent
+from router.router import Router
+from component.HTMLElement import HTMLElement, Link
 from component.Document import Document
-from component.HTMLElement import HTMLElement
-from component.style import Style
-from router.route import Route
-from component.form import Form, Label, InputField
+from component.style import Style, Css
 
 doc = Document()
-style = Style("#demo")
-route = Route()
-
-# Adding title to document
-doc.title("Testing")
-
-# Create the root and parent div
 root = Parent("div", id="root")
 
-UserNameLabel = Label("Username\n", "Username")
-PasswordLabel = Label("Password\n", "password")
+head_ = Css("""
+    h1{
+    color: blue;
+    }
+""", "style_")
+head_.render()
 
+navBar = Parent("nav")
 
-form = Form()
-form.method = "POST"
+homeLink = Link("/")
+homeLink.text = "Home"
 
-username = InputField("Username\n")
-username.label = UserNameLabel
+AboutLink = Link("/about")
+AboutLink.text = "About"
 
-password = InputField("Password\n")
-password.label = PasswordLabel
-password.type = "password"
+ContactLink = Link("/contact")
+ContactLink.text = "Contact"
 
-submit = InputField("Submit")
-submit.type = "submit"
+navBar.add_child(homeLink, AboutLink, ContactLink)
 
+homePage = Parent("div")
+HomeText = HTMLElement("h1")
+HomeText.text = "Home"
+homePage.add_child(HomeText)
 
-form.addFields(username, password, submit)
+aboutPage = Parent("div")
+aboutText = HTMLElement("h1")
+aboutText.text = "About"
+aboutPage.add_child(aboutText)
 
-root.add_child(form)
+contactPage = Parent("div")
+contactText = HTMLElement("h1")
+contactText.text = "Contact"
+contactPage.add_child(contactText)
 
+router = Router()
 
-doc.add_style(style)
-doc.body(root)
+router.render("/", homePage)
+router.render("/about", aboutPage)
+router.render("/contact", contactPage)
 
-# Build the document
+router.run()
+
+doc.body(navBar, root)
+doc.add_Head(head_.apply())
+
 doc.build()

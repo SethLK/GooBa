@@ -20,3 +20,9 @@ class HTMLElement:
             return self.__str__() + other.__str__()
         else:
             return self.__str__() + str(other)
+
+
+class Link(HTMLElement):
+    def __init__(self, href, **attributes):
+        super().__init__('a', **attributes)
+        self.attributes['href'] = href

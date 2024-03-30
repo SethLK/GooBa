@@ -24,6 +24,9 @@ class Document:
         modified_elements = '\n'.join([str(element) for element in elements])
         self.body_ = f"{modified_elements}"
 
+    def add_Head(self, newHead):
+        self.head += newHead + "\n"
+
     def build(self):
         styles_str = '\n'.join(map(str, self.styles))
         html_content = f"""<!DOCTYPE html>
@@ -47,8 +50,6 @@ class Document:
         with open('./output/index.html', 'w') as file:
             file.write(html_content)
             print(html_content)
-
-
 
         with open('./output/hmr.js', 'w') as file:
             file.write(javascript)
