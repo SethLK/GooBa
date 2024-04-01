@@ -5,12 +5,12 @@ class Router:
     def render(self, route, content):
         self.routes[route] = content
 
-    def run(self):
+    def run(self, entry):
         route_cases = ""
         for path, content in self.routes.items():
             route_cases += f"""
                 case '{path}':
-                    renderContent(`{content}`);  // Use backticks for multiline strings and template literals
+                    renderContent(`{content}`); 
                     break;
             """
 
@@ -26,9 +26,9 @@ function handleRoute() {{
 }}
 
 function renderContent(content) {{
-    const root = document.getElementById("root");
-    if (root) {{
-        root.innerHTML = content;
+    const {entry} = document.getElementById("{entry}");
+    if ({entry}) {{
+        {entry}.innerHTML = content;
     }}
 }}
 

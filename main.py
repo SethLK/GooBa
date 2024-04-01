@@ -1,56 +1,23 @@
-from component.parent import Parent
-from router.router import Router
-from component.HTMLElement import HTMLElement, Link
+from component.HTMLElement import HTMLElement
 from component.Document import Document
-from component.style import Style, Css
+from component.parent import Parent
+import requests
 
 doc = Document()
-root = Parent("div", id="root")
+root = Parent("div")
 
-head_ = Css("""
-    h1{
-    color: blue;
-    }
-""", "style_")
-head_.render()
+h1 = HTMLElement("h1")
 
-navBar = Parent("nav")
+try:
+    res = requests.get("https://jsonplaceholder.typicode.com/todos")
+    data = res.json()
+    for i in range(5):
+        h1.text = data[i]["title"]
+        root.add_child(h1)
 
-homeLink = Link("/")
-homeLink.text = "Home"
 
-AboutLink = Link("/about")
-AboutLink.text = "About"
+except requests.exceptions.RequestException as e:
+    print("Error:", e)
 
-ContactLink = Link("/contact")
-ContactLink.text = "Contact"
-
-navBar.add_child(homeLink, AboutLink, ContactLink)
-
-homePage = Parent("div")
-HomeText = HTMLElement("h1")
-HomeText.text = "Home"
-homePage.add_child(HomeText)
-
-aboutPage = Parent("div")
-aboutText = HTMLElement("h1")
-aboutText.text = "About"
-aboutPage.add_child(aboutText)
-
-contactPage = Parent("div")
-contactText = HTMLElement("h1")
-contactText.text = "Contact"
-contactPage.add_child(contactText)
-
-router = Router()
-
-router.render("/", homePage)
-router.render("/about", aboutPage)
-router.render("/contact", contactPage)
-
-router.run()
-
-doc.body(navBar, root)
-doc.add_Head(head_.apply())
-
+doc.body(root)
 doc.build()

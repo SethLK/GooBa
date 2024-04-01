@@ -6,6 +6,7 @@ class Document:
         self.head = ""
         self.body_ = ""
         self.styles = []
+        self.extern_js = []
 
     def title(self, text):
         self.head += f"<title>{text}</title>\n"
@@ -27,6 +28,9 @@ class Document:
     def add_Head(self, newHead):
         self.head += newHead + "\n"
 
+    def add_EternalJs(self, extern_JS):
+        self.extern_js.append(extern_JS)
+
     def build(self):
         styles_str = '\n'.join(map(str, self.styles))
         html_content = f"""<!DOCTYPE html>
@@ -43,6 +47,7 @@ class Document:
         
         <script src="./hmr.js"></script>
         <script src="./script.js"></script>
+        {self.extern_js}
         </html>
         """
 
