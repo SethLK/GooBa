@@ -22,12 +22,13 @@ class Css:
         self.style = style
         self.fileName = fileName
 
-    def render(self):
-        with open(f'./output/{self.fileName}.css', 'w') as file:
-            file.write(self.style)
+    # def render(self):
+    #     pass
 
-    def apply(self):
+    def render(self):
         if self.fileName:
+            with open(f'./output/{self.fileName}.css', 'w') as file:
+                file.write(self.style)
             link_tag = f'<link rel="stylesheet" type="text/css" href="{self.fileName}.css">'
             return link_tag
         elif self.style:

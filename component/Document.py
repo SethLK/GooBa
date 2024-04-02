@@ -29,10 +29,13 @@ class Document:
         self.head += newHead + "\n"
 
     def add_EternalJs(self, extern_JS):
-        self.extern_js.append(extern_JS)
+        if extern_JS:
+            self.extern_js.append(extern_JS)
 
     def build(self):
         styles_str = '\n'.join(map(str, self.styles))
+        external_js_str = '\n'.join(f'<script src="{path}.js"></script>' for path in self.extern_js)
+
         html_content = f"""<!DOCTYPE html>
         <html>
         <head>
@@ -47,7 +50,7 @@ class Document:
         
         <script src="./hmr.js"></script>
         <script src="./script.js"></script>
-        {self.extern_js}
+        {external_js_str}
         </html>
         """
 
