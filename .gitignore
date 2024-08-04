@@ -1,11 +1,6 @@
-# Python specific
+venv/
 __pycache__/
 *.pyc
-
-# IDE specific
+.DS_Store
 .idea/
-
-# Environment specific
-venv/
-
 output/
