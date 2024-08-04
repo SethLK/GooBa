@@ -4,8 +4,8 @@ class Selectors:
         self.class_ = None
         self.query = None
 
-    def IdSelector(self, id):
-        self.id = id
+    def IdSelector(self, id: str) ->str:
+        return f'document.getElementById({self.id})'
 
     def ClassSelector(self, class_):
         self.class_ = class_

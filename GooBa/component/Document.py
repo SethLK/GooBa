@@ -1,4 +1,4 @@
-from hmr.hmr import javascript
+from GooBa.hmr.hmr import javascript
 
 
 class Document:
@@ -47,14 +47,12 @@ class Document:
         <body>
         {self.body_}
         </body>
-        
         <script src="./hmr.js"></script>
-        <script src="./script.js"></script>
+        <script src="./router.js"></script>
         {external_js_str}
         </html>
         """
 
-        # Write modified content back to file
         with open('./output/index.html', 'w') as file:
             file.write(html_content)
             print(html_content)

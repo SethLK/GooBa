@@ -4,7 +4,7 @@ class Parent:
         self.attributes = attributes
         self.children = []
 
-    def add_child(self, *children):
+    def appendChild(self, *children):
         self.children.extend(children)
 
     def __str__(self):

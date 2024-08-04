@@ -1,10 +1,15 @@
-# Client Side Rendering
-
 class Rendering:
-    def __init__(self, url: str, selector: str, keys: str):
-        self.url: str = url
-        self.selector: str = selector
-        self.keys: str = keys
+    def __init__(self, url: str, selectors: dict):
+        self.url = url
+        self.selectors = selectors
+
+    def generate_fetch_code(self):
+        fetch_code = ""
+        for key, selector in self.selectors.items():
+            fetch_code += f"""
+                document.querySelector("{selector}").innerText = data.{key};\n
+            """
+        return fetch_code
 
     def render(self):
         js_code = f"""
@@ -15,7 +20,7 @@ class Rendering:
                         throw new Error('Network response was not ok');
                     }}
                     const data = await response.json();
-                    document.querySelector("{self.selector}").innerText = data.{self.keys};
+                    {self.generate_fetch_code()}
                 }} catch (error) {{
                     console.error('Error:', error);
                 }}
