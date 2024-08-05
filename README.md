@@ -20,6 +20,9 @@ Precautions:
 **Getting Started:**  
   
  **Installation**: Instructions on how to install Gooba using pip or by cloning the repository.   
+
+    pip install GooBa
+
   
   
 **Hello World Example**: A simple example to get new users up and running quickly.    
