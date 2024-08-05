@@ -7,4 +7,4 @@ output/
 dist
 GooBa.egg-info
 .env
-build
+build/*
