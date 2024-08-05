@@ -2,12 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name="GooBa",
-    version="0.1.1",  # Incremented version number
+    version="0.1.2",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[],
     entry_points={
-        'console_scripts': [],
+        'console_scripts': [
+            'gooba-new=project_generator:create_project_structure',
+        ],
     },
     author="Seth Linn Khant",
     author_email="sethlk2006@gmail.com",
