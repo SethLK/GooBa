@@ -1,3 +1,5 @@
+import os
+
 from GooBa.hmr.hmr import javascript
 
 
@@ -52,6 +54,8 @@ class Document:
         {external_js_str}
         </html>
         """
+        if not os.path.exists('./output'):
+            os.makedirs('./output')
 
         with open('./output/index.html', 'w') as file:
             file.write(html_content)
