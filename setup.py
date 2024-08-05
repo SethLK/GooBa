@@ -2,17 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="GooBa",
-    version="0.1.0beta",
-    packages=find_packages(),  # Automatically find all packages (subdirectories with __init__.py)
-    include_package_data=True,  # Include non-code files specified in MANIFEST.in
-    install_requires=[  # List of dependencies
-        # Add any required dependencies here, e.g., 'requests', 'flask'
-
-    ],
-    entry_points={  # Optional: define entry points for command-line scripts
-        'console_scripts': [
-            # 'gooba=GooBa.main:main',  # Example: Add a command line tool
-        ],
+    version="0.1.1",  # Incremented version number
+    packages=find_packages(),
+    include_package_data=True,
+    install_requires=[],
+    entry_points={
+        'console_scripts': [],
     },
     author="Seth Linn Khant",
     author_email="sethlk2006@gmail.com",
@@ -22,7 +17,15 @@ setup(
     url="https://github.com/SethLK/GooBa",
     classifiers=[
         'Development Status :: 4 - Beta',
-        'MIT License',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
     ],
     python_requires='>=3.6',
