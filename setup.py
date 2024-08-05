@@ -5,11 +5,11 @@ setup(
     version="0.1.0beta",
     packages=find_packages(),  # Automatically find all packages (subdirectories with __init__.py)
     include_package_data=True,  # Include non-code files specified in MANIFEST.in
-    install_requires=[          # List of dependencies
+    install_requires=[  # List of dependencies
         # Add any required dependencies here, e.g., 'requests', 'flask'
 
     ],
-    entry_points={              # Optional: define entry points for command-line scripts
+    entry_points={  # Optional: define entry points for command-line scripts
         'console_scripts': [
             # 'gooba=GooBa.main:main',  # Example: Add a command line tool
         ],
@@ -19,9 +19,11 @@ setup(
     description="Gooba is a python frontend web framework inspired by Reactjs.",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    url="https://yourprojecturl.com",
+    url="https://github.com/SethLK/GooBa",
     classifiers=[
-        #
+        'Development Status :: 4 - Beta',
+        'MIT License',
+        'Programming Language :: Python :: 3.12',
     ],
     python_requires='>=3.6',
 )

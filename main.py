@@ -1,21 +1,10 @@
-from GooBa import Document, Parent, Element, Link
+from GooBa import Document, Element
 
+# Initialize Document and Router
 doc = Document()
 
-root = Parent("div", id="root")
+h1 = Element("h1")
+h1.text = "Hello World"
 
-sidebar = Parent("div")
-main = Parent("div")
-
-head = Element("h1")
-head.text = "Hello THere"
-
-to_home = Link("/")
-to_about = Link("/")
-
-home_page = Element
-
-root.appendChild(sidebar, main)
-
+doc.body(h1)
 doc.build()
-
