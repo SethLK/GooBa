@@ -3,6 +3,10 @@ class Element:
         self.tag = tag
         self.attributes = attributes
         self.text = None
+        self.children = []
+
+    def appendChild(self, *children):
+        self.children.extend(children)
 
     def __str__(self):
         attribute_string = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
@@ -11,9 +15,11 @@ class Element:
             attribute_string = attribute_string.replace('className', 'class')
 
         if self.text is not None:
-            return f'<{self.tag} {attribute_string}>{self.text}</{self.tag}>'
+            return f'<{self.tag} {attribute_string}>{self.text}</{self.tag}>\n'
         else:
-            return f'<{self.tag} {attribute_string}></{self.tag}>'
+            children_ = ''.join(str(child) for child in self.children)
+            return f'<{self.tag} {attribute_string}>\n{children_}\n</{self.tag}>'
+
 
     def __add__(self, other):
         if isinstance(other, Element):

@@ -1,10 +1,16 @@
 from GooBa import Document, Element
 
-# Initialize Document and Router
 doc = Document()
+div = Element("div")
 
 h1 = Element("h1")
-h1.text = "Hello World"
+h1.text = "Hello ld"
 
-doc.body(h1)
+div.appendChild(h1)
+
+h1.text = "Hello There"
+
+div.appendChild(h1)
+
+doc.body(div)
 doc.build()
