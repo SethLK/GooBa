@@ -20,15 +20,12 @@ class Document:
         meta_tag += "/>\n"
         self.head += meta_tag
 
-    def add_style(self, *style):
-        self.styles.extend(style)
-
     def body(self, *elements: object) -> object:
         modified_elements = '\n'.join([str(element) for element in elements])
         self.body_ = f"{modified_elements}"
 
-    def add_Head(self, newHead):
-        self.head += newHead + "\n"
+    def appendHead(self, newHead):
+        self.head += str(newHead) + "\n"
 
     def add_EternalJs(self, extern_JS):
         if extern_JS:
