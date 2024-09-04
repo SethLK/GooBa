@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 class CreateElement:
     def __init__(self, tag, **attributes):
         self.tag = tag
@@ -45,6 +48,7 @@ class CreateElement:
         else:
             return self.__str__() + str(other)
 
+
 class Image(CreateElement):
     def __init__(self, tag, **attributes):
         super().__init__('img', **attributes)
@@ -65,8 +69,67 @@ class Image(CreateElement):
         else:
             return self.__str__() + str(other)
 
-class Link(CreateElement):
+
+class CreateLink(CreateElement):
     def __init__(self, tag, **attributes):
-        super().__init__('img', **attributes)
+        super().__init__('a', **attributes)
         self.href = None
         self.attributes = attributes
+
+    def __str__(self):
+        attribute_string = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
+        return f'<a href="{self.href}" {attribute_string}>'
+
+
+class Methods(Enum):
+    GET = "get"
+    POST = "post"
+    PUT = "put"
+    PATCH = "patch"
+    DELETE = "delete"
+
+
+class CreateForm(CreateElement):
+    def __init__(self, action='', method='POST', **attributes):
+        super().__init__('form', **attributes)
+        self.action = action
+        self.method = method
+
+    def add_input(self, input_type, name, value='', **attributes):
+        input_attributes = {
+            'type': input_type,
+            'name': name,
+            'value': value,
+            **attributes
+        }
+        input_tag = CreateElement('input', **input_attributes)
+        self.appendChild(input_tag, "<br>")
+
+    def add_textarea(self, name, rows=4, cols=50, **attributes):
+        textarea_attributes = {
+            'name': name,
+            'rows': rows,
+            'cols': cols,
+            **attributes
+        }
+        textarea_tag = CreateElement('textarea', **textarea_attributes)
+        self.appendChild(textarea_tag, "<br>")
+
+    def add_label(self, for_, text=''):
+        label = CreateElement("label", **{'for': for_})
+        label.text = text
+        self.appendChild(label, "<br>")
+
+    def add_button(self, button_type='submit', text='Submit', **attributes):
+        button_attributes = {
+            'type': button_type,
+            **attributes
+        }
+        button_tag = CreateElement('button', **button_attributes)
+        button_tag.appendChild(text)
+        self.appendChild(button_tag)
+
+    def __str__(self):
+        attribute_string = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
+        inner_html = '\n'.join([str(child) for child in self.children])
+        return f'<form action="{self.action}" method="{self.method}" {attribute_string}>\n{inner_html}\n</form>'
