@@ -76,24 +76,39 @@ class Router(object):
     def __init__(self):
         self.routes = {}  # For static routes
         self.dynamic_routes = []  # For dynamic routes
+        self.param = None
 
     def render(self, route, param_content):
         content = str(param_content)
 
         # Check if it's a dynamic route (contains < and >)
         if '<' in route and '>' in route:
-            # Convert Flask-style routes to regex patterns
-            # Example: "/user/<int:id>/" -> "/user/(\d+)/"
-            pattern = route
-            # Replace <int:id> with (\d+)
-            pattern = re.sub(r'<int:[^>]+>', r'(\\d+)', pattern)
-            # Replace <str:slug> or <slug> with ([^/]+)
-            pattern = re.sub(r'<str:[^>]+>', r'([^/]+)', pattern)
-            pattern = re.sub(r'<[^>]+>', r'([^/]+)', pattern)
+            # # Convert Flask-style routes to regex patterns
+            # # Example: "/user/<int:id>/" -> "/user/(\d+)/"
+            # pattern = route
+            # param_names = re.findall(r'<(?:int:|str:)?([^>]+)>', route)
+            # # Replace <int:id> with (\d+)
+            # pattern = re.sub(r'<int:[^>]+>', r'(\\d+)', pattern)
+            # # Replace <str:slug> or <slug> with ([^/]+)
+            # pattern = re.sub(r'<str:[^>]+>', r'([^/]+)', pattern)
+            # pattern = re.sub(r'<[^>]+>', r'([^/]+)', pattern)
+            #
+            # # Escape forward slashes for JavaScript regex
+            # js_pattern = pattern.replace('/', '\\/')
 
-            # Escape forward slashes for JavaScript regex
-            js_pattern = pattern.replace('/', '\\/')
-            self.dynamic_routes.append((js_pattern, content))
+            # Extract parameter names and convert to Page.js format
+            param_names = re.findall(r'<(?:int:|str:)?([^>]+)>', route)
+
+            # Convert Flask-style to Page.js style:
+            # "/user/<int:id>/" -> "/user/:id/"
+            # "/post/<str:slug>/" -> "/post/:slug/"
+            # "/item/<name>/" -> "/item/:name/"
+            js_route = route
+            js_route = re.sub(r'<int:([^>]+)>', r':\1', js_route)
+            js_route = re.sub(r'<str:([^>]+)>', r':\1', js_route)
+            js_route = re.sub(r'<([^>]+)>', r':\1', js_route)
+
+            self.dynamic_routes.append((js_route, content, param_names))
         else:
             # Static route - escape quotes and newlines
             # escaped_content = content.replace('"', '\\"').replace('\n', '\\n')
@@ -115,14 +130,28 @@ page('{path}', () => {{
 
         # Generate dynamic route registrations
         dynamic_routes_js = []
-        for pattern, content in self.dynamic_routes:
-            # For dynamic routes, we need to capture parameters
-            # Simple approach: just render the content as-is
-            # You might want to enhance this to handle route parameters
-            dynamic_routes_js.append(f'''
-page('/{pattern}', (ctx) => {{
-    render(`{content}`);
-}});''')
+        for js_route, content, param_names in self.dynamic_routes:
+            escaped_content = content.replace('`', '\\`').replace('$', '\\$')
+
+            if param_names:
+                # Create parameter replacement logic
+                param_replacements = []
+                for param_name in param_names:
+                    # Replace {param_name} in content with actual parameter value
+                    param_replacements.append(f'html = html.replace("{{{{{param_name}}}}}", ctx.params.{param_name});')
+
+                param_logic = '\n    '.join(param_replacements)
+                dynamic_routes_js.append(f'''
+        page('{js_route}', (ctx) => {{
+            let html = `{escaped_content}`;
+            {param_logic}
+            render(html);
+        }});''')
+            else:
+                dynamic_routes_js.append(f'''
+        page('{js_route}', (ctx) => {{
+            render(`{escaped_content}`);
+        }});''')
 
         dynamic_routes_code = '\n'.join(dynamic_routes_js)
 
