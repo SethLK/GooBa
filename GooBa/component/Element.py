@@ -37,10 +37,10 @@ class CreateElement:
             content = ''.join(str(child) for child in self.children)
 
         if self.text:
-            return f'<{self.tag} {attribute_string}>{content}</{self.tag}>\n'
+            return f'<{self.tag} {attribute_string}>{content}</{self.tag}>'
         else:
             children_ = ''.join(str(child) for child in self.children)
-            return f'<{self.tag} {attribute_string}>\n{children_}\n</{self.tag}>'
+            return f'<{self.tag} {attribute_string}>{children_}</{self.tag}>'
 
     def __add__(self, other):
         if isinstance(other, CreateElement):

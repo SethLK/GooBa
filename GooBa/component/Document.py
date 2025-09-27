@@ -38,6 +38,7 @@ class Document:
         html_content = f"""<!DOCTYPE html>
         <html>
         <head>
+        
         <style>
         {styles_str}
         </style>
@@ -47,8 +48,10 @@ class Document:
         {self.body_}
         </body>
         <script src="./hmr.js"></script>
-        <script src="./router.js"></script>
+        <script type='module' src="./router.js"></script>
+        <script src="./page.js"></script>
         {external_js_str}
+        <script src="https://cdn.rawgit.com/visionmedia/page.js/master/page.js"></script>
         </html>
         """
         if not os.path.exists('./output'):

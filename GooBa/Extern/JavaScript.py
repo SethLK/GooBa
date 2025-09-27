@@ -14,9 +14,12 @@ class CodeBlock:
             return self.filename
         return None
 
-    def get_code_tag(self):
+    def get_code_tag(self, type):
         if self.code:
-            return f'<script>{self.code}</script>'
+            if type:
+                return f'<script type="{type}">{self.code}</script>'
+            else:
+                return f'<script>{self.code}</script>'
         return None
 
     def __str__(self):
