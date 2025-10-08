@@ -38,7 +38,7 @@ class Document:
         html_content = f"""<!DOCTYPE html>
         <html>
         <head>
-        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <style>
         {styles_str}
         </style>
@@ -47,11 +47,13 @@ class Document:
         <body>
         {self.body_}
         </body>
-        <script src="./hmr.js"></script>
-        <script type='module' src="./router.js"></script>
-        <script src="./page.js"></script>
+        
+        
+        <script src="/page.js"></script>
+        <script src="/router.js"></script>
         {external_js_str}
-        <script src="https://cdn.rawgit.com/visionmedia/page.js/master/page.js"></script>
+        <script src="/hmr.js"></script>
+        
         </html>
         """
         if not os.path.exists('./output'):

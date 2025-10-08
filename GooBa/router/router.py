@@ -1,119 +1,56 @@
-# import re
-# from GooBa import Parent
-#
-# class Router:
-#     def __init__(self):
-#         self.routes = {}
-#         self.dynamic_routes = []
-#
-#     def render(self, route, content):
-#         if isinstance(content, Parent):
-#             content = str(content)  # Convert Parent to HTML string
-#         if '<' in route and '>' in route:
-#             # It's a dynamic route
-#             self.dynamic_routes.append((re.compile(route), content))
-#         else:
-#             # Escape quotes and newlines in content
-#             escaped_content = content.replace('"', '\\"').replace('\n', '\\n')
-#             self.routes[route] = f'"{escaped_content}"'
-#
-#     def run(self, entry):
-#         # Prepare static routes
-#         route_cases = ", ".join(f'"{path}": {content}' for path, content in self.routes.items())
-#
-#         # Prepare dynamic route handling
-#         dynamic_routes_js = ""
-#         for pattern, content in self.dynamic_routes:
-#             escaped_content = content.replace('"', '\\"').replace('\n', '\\n')
-#             dynamic_routes_js += f"""
-#                 if (new RegExp({pattern.pattern}).test(path)) {{
-#                     html = `{escaped_content}`.replace(new RegExp({pattern.pattern}), path);
-#                 }}
-#             """
-#
-#         # Generate JavaScript code
-#         js_code = f"""
-# const route = (event) => {{
-#     event = event || window.event;
-#     event.preventDefault();
-#     window.history.pushState({{}}, "", event.target.href);
-#     handleLocation();
-# }};
-#
-# const routes = {{
-#     {route_cases}
-# }};
-#
-# const handleLocation = () => {{
-#     const path = window.location.pathname;
-#     let html = routes[path];
-#
-#     if (!html) {{
-#         {dynamic_routes_js}
-#         if (!html) {{
-#             html = "<h2>404 Page Not Found</h2>";
-#         }}
-#     }}
-#
-#     document.getElementById("{entry}").innerHTML = html;
-# }};
-#
-# window.onpopstate = handleLocation;
-# window.route = route;
-#
-# handleLocation();
-# """
-#         with open('./output/router.js', 'w') as file:
-#             file.write(js_code)
-
 import re
-from .router_js import page  # Assuming this contains the page.js library content
+from .router_js import page
 
 from GooBa import Parent
-
 
 class Router(object):
     def __init__(self):
         self.routes = {}  # For static routes
         self.dynamic_routes = []  # For dynamic routes
         self.param = None
+        self.param_routes = {}
 
     def render(self, route, param_content):
         content = str(param_content)
 
-        # Check if it's a dynamic route (contains < and >)
         if '<' in route and '>' in route:
-            # # Convert Flask-style routes to regex patterns
-            # # Example: "/user/<int:id>/" -> "/user/(\d+)/"
-            # pattern = route
-            # param_names = re.findall(r'<(?:int:|str:)?([^>]+)>', route)
-            # # Replace <int:id> with (\d+)
-            # pattern = re.sub(r'<int:[^>]+>', r'(\\d+)', pattern)
-            # # Replace <str:slug> or <slug> with ([^/]+)
-            # pattern = re.sub(r'<str:[^>]+>', r'([^/]+)', pattern)
-            # pattern = re.sub(r'<[^>]+>', r'([^/]+)', pattern)
-            #
-            # # Escape forward slashes for JavaScript regex
-            # js_pattern = pattern.replace('/', '\\/')
-
-            # Extract parameter names and convert to Page.js format
             param_names = re.findall(r'<(?:int:|str:)?([^>]+)>', route)
-
-            # Convert Flask-style to Page.js style:
-            # "/user/<int:id>/" -> "/user/:id/"
-            # "/post/<str:slug>/" -> "/post/:slug/"
-            # "/item/<name>/" -> "/item/:name/"
             js_route = route
-            js_route = re.sub(r'<int:([^>]+)>', r':\1', js_route)
-            js_route = re.sub(r'<str:([^>]+)>', r':\1', js_route)
             js_route = re.sub(r'<([^>]+)>', r':\1', js_route)
-
             self.dynamic_routes.append((js_route, content, param_names))
         else:
-            # Static route - escape quotes and newlines
-            # escaped_content = content.replace('"', '\\"').replace('\n', '\\n')
-            # self.routes[route] = escaped_content
             self.routes[route] = content
+
+    def _convert_to_regex(self, path: str) -> str:
+        """Convert route like '/<id>/<name>' to regex pattern"""
+        # Replace <param> with named capture groups
+        pattern = re.sub(r'<(\w+)>', r'(?P<\1>[^/]+)', path)
+        return f'^{pattern}$'
+
+    def _escape_for_js(self, content):
+        """Escape HTML content for JavaScript template literals"""
+        # Escape backslashes first
+        content = content.replace('\\', '\\\\')
+        # Escape backticks
+        content = content.replace('`', '\\`')
+        # Escape $ for template literals
+        content = content.replace('$', '\\$')
+        # Escape newlines
+        content = content.replace('\n', '\\n')
+        # Escape carriage returns
+        content = content.replace('\r', '\\r')
+        # Escape tabs
+        content = content.replace('\t', '\\t')
+        return content
+
+    def _get_param_replacement_code(self, param_names):
+        """Generate JavaScript code for parameter replacement"""
+        replacements = []
+        for param_name in param_names:
+            # Handle multiple occurrences of the same parameter in the content
+            # Use regex with global flag to replace all occurrences
+            replacements.append(f'html = html.replace(new RegExp(`{{{{{param_name}}}}}`, "g"), ctx.params.{param_name} || "");')
+        return '\n    '.join(replacements)
 
     def run(self, entry):
         """Generate and write the router.js file"""
@@ -121,9 +58,11 @@ class Router(object):
         # Generate static route registrations
         static_routes_js = []
         for path, content in self.routes.items():
+            # Escape content for JavaScript
+            escaped_content = self._escape_for_js(content)
             static_routes_js.append(f'''
 page('{path}', () => {{
-    render(`{content}`);
+    render(`{escaped_content}`);
 }});''')
 
         static_routes_code = '\n'.join(static_routes_js)
@@ -131,32 +70,29 @@ page('{path}', () => {{
         # Generate dynamic route registrations
         dynamic_routes_js = []
         for js_route, content, param_names in self.dynamic_routes:
-            escaped_content = content.replace('`', '\\`').replace('$', '\\$')
+            # Escape content for JavaScript
+            escaped_content = self._escape_for_js(content)
 
             if param_names:
-                # Create parameter replacement logic
-                param_replacements = []
-                for param_name in param_names:
-                    # Replace {param_name} in content with actual parameter value
-                    param_replacements.append(f'html = html.replace("{{{{{param_name}}}}}", ctx.params.{param_name});')
+                # Generate parameter replacement logic
+                param_replacements = self._get_param_replacement_code(param_names)
 
-                param_logic = '\n    '.join(param_replacements)
                 dynamic_routes_js.append(f'''
-        page('{js_route}', (ctx) => {{
-            let html = `{escaped_content}`;
-            {param_logic}
-            render(html);
-        }});''')
+page('{js_route}', (ctx) => {{
+    let html = `{escaped_content}`;
+    {param_replacements}
+    render(html);
+}});''')
             else:
                 dynamic_routes_js.append(f'''
-        page('{js_route}', (ctx) => {{
-            render(`{escaped_content}`);
-        }});''')
+page('{js_route}', (ctx) => {{
+    render(`{escaped_content}`);
+}});''')
 
         dynamic_routes_code = '\n'.join(dynamic_routes_js)
 
         # Complete JavaScript code
-        js_code = f'''//import page from './page.js';
+        js_code = f'''// Router generated by Packed Framework
 
 const render = (html) => {{
     document.getElementById('{entry}').innerHTML = html;
@@ -165,7 +101,7 @@ const render = (html) => {{
 // Static routes
 {static_routes_code}
 
-// Dynamic routes  
+// Dynamic routes
 {dynamic_routes_code}
 
 // 404 handler
@@ -181,5 +117,5 @@ page.start();
             file.write(js_code)
 
         # Write the page.js library file
-        with open('./output/page.js', 'w') as file:  # Fixed: added missing comma
+        with open('./output/page.js', 'w') as file:
             file.write(page)

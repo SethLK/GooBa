@@ -5,3 +5,6 @@
 # @script
 # @asset
 
+# from Decorator import *
+
+from Templix import view

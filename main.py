@@ -33,31 +33,68 @@
 #
 # doc.build()
 
+#
+# from GooBa import Document, CreateElement, Router
+#
+# # Initialize Document and Router
+# doc = Document()
+#
+# container = CreateElement('div', id='root')
+#
+# router = Router()
+#
+# home = CreateElement('h1', { id : 'home' }, 'Home')
+#
+# about = CreateElement('h1', id='about')
+# about.text = 'About'
+#
+# # For dynamic routes, use template placeholders like {{id}}
+# param = CreateElement('div', id='param')
+# param.text = 'User ID: {{id}}'  # This will be replaced with actual ID
+#
+# router.render('/', home)
+# router.render('/about', about)
+# router.render('/<int:id>', param)  # This will become '/:id' in Page.js
+#
+# router.run('root')
+# doc.body(container)
+#
+# doc.build()
 
 from GooBa import Document, CreateElement, Router
 
-# Initialize Document and Router
 doc = Document()
-
-container = CreateElement('div', id='root')
-
+container = CreateElement('div',{'id': 'root'})
 router = Router()
 
-home = CreateElement('h1', id='home')
-home.text = 'Home'
+# Clean, readable syntax
+home = CreateElement('div', {'id': 'home'},
+    CreateElement('h1', {}, 'Welcome to GooBa!'),
+    CreateElement('p', {}, 'This works perfectly!'),
+    CreateElement('button', {'onclick': "alert('Hello!')"}, 'Click me')
+)
 
-about = CreateElement('h1', id='about')
-about.text = 'About'
+home.style = {
+    "background-color": "#00f",
+    "color": "#fff",
+}
 
-# For dynamic routes, use template placeholders like {{id}}
-param = CreateElement('div', id='param')
-param.text = 'User ID: {{id}}'  # This will be replaced with actual ID
+about = CreateElement('h1', {'id': 'about'}, 'About')
+
+# param = CreateElement('div', {'id': 'param'}, 'User ID: {{id}}')
 
 router.render('/', home)
 router.render('/about', about)
-router.render('/<int:id>', param)  # This will become '/:id' in Page.js
+router.render('/<id>', CreateElement('div', {'id': 'param'}, 'User ID: {{id}}'))
+
+router.render('/something/<id>', CreateElement('div', {'id': 'param'}, 'User ID: {{id}}'))
+#
+# router.render('/api/<id>/<action>',
+#     CreateElement('div', {'class_name': 'api'},
+#         'API /{{id}}/{{action}}'
+#     )
+# )
 
 router.run('root')
 doc.body(container)
-
 doc.build()
