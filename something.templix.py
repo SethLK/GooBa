@@ -14,6 +14,7 @@ def tag():
 def main_page():
     return (
         <div>
-        <h1>Hello WOrld</h1>
+        <h1>Hello <br> WOrld</h1>
+        <img src="https://www.w3schools.com/html/pic_trulli.jpg">
         </div>
     )

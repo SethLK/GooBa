@@ -31,7 +31,16 @@ def main_page():
             CreateElement(
                 'h1',
                 {},
-                'Hello WOrld',
+                'Hello ',
+                CreateElement('br'),
+                ' WOrld',
+            ),
+            '',
+            CreateElement(
+                'img',
+                {
+                    'src': 'https://www.w3schools.com/html/pic_trulli.jpg',
+                },
             ),
             '',
         )

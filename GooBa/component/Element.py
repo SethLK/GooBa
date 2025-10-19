@@ -48,12 +48,72 @@ from enum import Enum
 #         else:
 #             return self.__str__() + str(other)
 
+# class CreateElement:
+#     def __init__(self, tag, attributes=None, *children):
+#         self.tag = tag
+#         self.attributes = attributes or {}
+#         self.children = list(children)
+#         self.style = {}  # Use a dictionary for inline styles
+#
+#     def appendChild(self, *children):
+#         self.children.extend(children)
+#
+#     def _format_style(self):
+#         if not self.style:
+#             return ''
+#         style_items = []
+#         for key, value in self.style.items():
+#             style_items.append(f'{key}: {value};')
+#         return ' '.join(style_items)
+#
+#     def __str__(self):
+#         # Format attributes
+#         attribute_items = []
+#         for key, value in self.attributes.items():
+#             if key == 'className':
+#                 key = 'class'
+#             attribute_items.append(f'{key}="{value}"')
+#
+#         attribute_string = ' '.join(attribute_items)
+#
+#         # Add inline style if it exists
+#         style_string = self._format_style()
+#         if style_string:
+#             if attribute_string:
+#                 attribute_string += f' style="{style_string}"'
+#             else:
+#                 attribute_string = f'style="{style_string}"'
+#
+#         # Handle children and text content
+#         if self.children:
+#             content = ''.join(str(child) for child in self.children)
+#         else:
+#             content = ''
+#
+#         # Build the HTML string
+#         if attribute_string:
+#             return f'<{self.tag} {attribute_string}>{content}</{self.tag}>'
+#         else:
+#             return f'<{self.tag}>{content}</{self.tag}>'
+#
+#     def __add__(self, other):
+#         if isinstance(other, CreateElement):
+#             return self.__str__() + other.__str__()
+#         else:
+#             return self.__str__() + str(other)
+
 class CreateElement:
+    VOID_TAGS = {
+        'area', 'base', 'br', 'col', 'embed', 'hr',
+        'img', 'input', 'link', 'meta', 'param',
+        'source', 'track', 'wbr'
+    }
+
     def __init__(self, tag, attributes=None, *children):
         self.tag = tag
         self.attributes = attributes or {}
         self.children = list(children)
-        self.style = {}  # Use a dictionary for inline styles
+        self.style = {}
 
     def appendChild(self, *children):
         self.children.extend(children)
@@ -61,9 +121,7 @@ class CreateElement:
     def _format_style(self):
         if not self.style:
             return ''
-        style_items = []
-        for key, value in self.style.items():
-            style_items.append(f'{key}: {value};')
+        style_items = [f'{key}: {value};' for key, value in self.style.items()]
         return ' '.join(style_items)
 
     def __str__(self):
@@ -84,13 +142,17 @@ class CreateElement:
             else:
                 attribute_string = f'style="{style_string}"'
 
-        # Handle children and text content
-        if self.children:
-            content = ''.join(str(child) for child in self.children)
-        else:
-            content = ''
+        # Handle void/self-closing tags
+        if self.tag in self.VOID_TAGS:
+            if attribute_string:
+                return f'<{self.tag} {attribute_string}>'
+            else:
+                return f'<{self.tag}>'
 
-        # Build the HTML string
+        # Handle children and text content
+        content = ''.join(str(child) for child in self.children)
+
+        # Build the full element
         if attribute_string:
             return f'<{self.tag} {attribute_string}>{content}</{self.tag}>'
         else:
@@ -99,8 +161,7 @@ class CreateElement:
     def __add__(self, other):
         if isinstance(other, CreateElement):
             return self.__str__() + other.__str__()
-        else:
-            return self.__str__() + str(other)
+        return self.__str__() + str(other)
 
 
 class Image(CreateElement):

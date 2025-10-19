@@ -22,6 +22,11 @@ from pypeg2 import parse, compose, List, name, maybe_some, attr, optional, ignor
 whitespace = re.compile(r"\s+")
 text = re.compile(r'[^<]+')
 
+VOID_TAGS = {
+    'area', 'base', 'br', 'col', 'embed', 'hr',
+    'img', 'input', 'link', 'meta', 'param',
+    'source', 'track', 'wbr'
+}
 
 class Whitespace(object):
     """Matches one or more whitespace characters
@@ -187,24 +192,65 @@ class ComponentTag(SelfClosingTag):
 
 
 class PairedTag(object):
+    # """Matches an open/close tag pair and all of its attributes and children."""
+    #
+    # @staticmethod
+    # def parse(parser, text, pos):
+    #     result = PairedTag()
+    #     try:
+    #         text, _ = parser.parse(text, '<')
+    #         text, tag = parser.parse(text, Symbol)
+    #         result.name = tag
+    #         text, attributes = parser.parse(text, Attributes)
+    #         result.attributes = attributes
+    #         text, _ = parser.parse(text, '>')
+    #         text, children = parser.parse(text, TagChildren)
+    #         result.children = children
+    #         text, _ = parser.parse(text, optional(whitespace))
+    #         text, _ = parser.parse(text, '</')
+    #         text, _ = parser.parse(text, result.name)
+    #         text, _ = parser.parse(text, '>')
+    #     except SyntaxError as e:
+    #         return text, e
+    #
+    #     return text, result
+
     """Matches an open/close tag pair and all of its attributes and children."""
+
+    VOID_TAGS = {
+        'area', 'base', 'br', 'col', 'embed', 'hr',
+        'img', 'input', 'link', 'meta', 'param',
+        'source', 'track', 'wbr'
+    }
 
     @staticmethod
     def parse(parser, text, pos):
         result = PairedTag()
         try:
+            # Opening tag
             text, _ = parser.parse(text, '<')
             text, tag = parser.parse(text, Symbol)
             result.name = tag
             text, attributes = parser.parse(text, Attributes)
             result.attributes = attributes
+
+            # Self-closing check
+            text, maybe_closer = parser.parse(text, optional('/'))
             text, _ = parser.parse(text, '>')
+
+            # ✅ Handle void/self-closing tags
+            if result.name.lower() in PairedTag.VOID_TAGS or maybe_closer:
+                result.children = []
+                return text, result
+
+            # Normal paired tag
             text, children = parser.parse(text, TagChildren)
             result.children = children
             text, _ = parser.parse(text, optional(whitespace))
             text, _ = parser.parse(text, '</')
             text, _ = parser.parse(text, result.name)
             text, _ = parser.parse(text, '>')
+
         except SyntaxError as e:
             return text, e
 
