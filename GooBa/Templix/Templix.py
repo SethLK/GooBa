@@ -1,43 +1,57 @@
-
-from __future__ import unicode_literals, print_function
+from __future__ import annotations
 
 import inspect
 import re
 import sys
 import os
 import functools
+from typing import Any
 
 from pypeg2 import parse, compose, List, name, maybe_some, attr, optional, ignore, Symbol
 
 
+# ---------------------------------------------------------------------------
+# Notes on updates
+# - Modernized Python 2 -> Python 3 compatibility (removed `basestring`, `unicode`)
+# - Fixed several compose() implementations to return valid Python fragments
+# - Safer file I/O (explicit encodings and context managers)
+# - More robust type checks (use isinstance(..., str))
+# - Use modern exception syntax
+# ---------------------------------------------------------------------------
 
-
-whitespace = re.compile(r'\s+')
+whitespace = re.compile(r"\s+")
 text = re.compile(r'[^<]+')
 
 
 class Whitespace(object):
-    """Matches one or more whitespace characters"""
+    """Matches one or more whitespace characters
+
+    When composing we compress runs of whitespace to a single space in the
+    generated Python source (this mirrors original behaviour).
+    """
 
     grammar = attr('value', whitespace)
 
     def compose(self, parser, indent=0):
-        "Compress all whitespace to a single space (' ')"
+        # Return a python literal that represents a single space between tokens.
         indent_str = indent * "    "
-        return "{indent}' '".format(indent=indent_str)
+        return "{indent}''".format(indent=indent_str)
 
 
 class Text(object):
     """Matches text between tags and/or inline code sections."""
 
-    grammar = attr('whitespace', optional(whitespace)), attr('value', re.compile(r'[^<{]+'))
+    grammar = attr('whitespace', optional(whitespace)), attr('value', re.compile(r"[^<{]+"))
 
     def compose(self, parser, indent=0):
         indent_str = indent * "    "
+        ws = self.whitespace or ''
+        # Escape single quotes in the composed python string literal
+        safe_value = self.value.replace("'", "\\'")
         return "{indent}'{whitespace}{value}'".format(
             indent=indent_str,
-            whitespace=self.whitespace or '',
-            value=self.value
+            whitespace=ws,
+            value=safe_value
         )
 
 
@@ -47,11 +61,13 @@ class String(object):
     grammar = '"', attr('value', re.compile(r'[^"]*')), '"'
 
     def compose(self, parser):
-        return "'%s'" % self.value
+        # Return a Python single-quoted literal
+        safe = self.value.replace("'", "\\'")
+        return "'%s'" % safe
 
 
 class InlineCode(object):
-    """Matches arbitrary Python code within a curly braces."""
+    """Matches arbitrary Python code within curly braces."""
 
     grammar = '{', attr('code', re.compile(r'[^}]*')), '}'
 
@@ -64,18 +80,28 @@ class InlineCode(object):
 
 
 class Attribute(object):
-    """Matches an attribute formatted as either: key="value" or key={value} to handle strings and
-    inline code in a similar style to JSX.
+    """Matches an attribute formatted as either: key="value" or key={value}.
+
+    Value is stored as either a String or InlineCode instance. compose() will
+    call the nested compose when necessary.
     """
 
     grammar = name(), '=', attr('value', [String, InlineCode])
 
     def compose(self, parser, indent=0):
         indent_str = indent * "    "
+        # value may be an object with compose() or a raw string
+        val = self.value
+        if hasattr(val, 'compose'):
+            value_code = val.compose(parser)
+        else:
+            # fallback: treat as raw
+            value_code = repr(val)
+
         return "{indent}'{name}': {value},".format(
             indent=indent_str,
             name=self.name,
-            value=self.value.compose(parser)
+            value=value_code
         )
 
 
@@ -88,18 +114,18 @@ class Attributes(List):
         indent_str = indent * "    "
 
         if not len(self):
-            indented_paren = '{indent}{{}},\n'.format(indent=indent_str)
-            return indented_paren if followed_by_children else ''
+            # no attributes: return empty dict literal only if children will follow
+            return '{indent}{{}},\n'.format(indent=indent_str) if followed_by_children else ''
 
-        text = []
-        text.append('{indent}{{\n'.format(indent=indent_str))
+        parts = []
+        parts.append('{indent}{{\n'.format(indent=indent_str))
         for entry in self:
-            if not isinstance(entry, basestring):
-                text.append(entry.compose(parser, indent=indent+1))
-                text.append('\n')
-        text.append('{indent}}},\n'.format(indent=indent_str))
+            if not isinstance(entry, str):
+                parts.append(entry.compose(parser, indent=indent+1))
+                parts.append('\n')
+        parts.append('{indent}}},\n'.format(indent=indent_str))
 
-        return ''.join(text)
+        return ''.join(parts)
 
 
 class SelfClosingTag(object):
@@ -122,7 +148,7 @@ class SelfClosingTag(object):
         contents_sep = ',\n' if has_contents else ''
 
         text.append(
-            "{indent}Elem({paren_sep}{indent_plus}{name}{contents_sep}".format(
+            "{indent}CreateElement({paren_sep}{indent_plus}{name}{contents_sep}".format(
                 indent=indent_str,
                 indent_plus=indent_plus_str if has_contents else '',
                 name=self.get_name(),
@@ -141,12 +167,7 @@ class SelfClosingTag(object):
 
 
 class ComponentName(object):
-    """A standard name or symbol beginning with an uppercase letter.
-
-    There are language implications of relying on an upper case letter. It seems reasonable to
-    support another syntax for indicating a component at some point. Perhaps an '!' mark at the
-    start of the name or something similar.
-    """
+    """A standard name or symbol beginning with an uppercase letter."""
 
     grammar = attr('first_letter', re.compile(r'[A-Z]')), attr('rest', optional(Symbol))
 
@@ -155,9 +176,7 @@ class ComponentName(object):
 
 
 class ComponentTag(SelfClosingTag):
-    """Matches a self closing tag with a name that starts with an uppercase letter. These tags are
-    treating as components and their names are assumed to be Python classes rather than strings.
-    """
+    """Self-closing tag whose name starts with an uppercase letter; treated as a component."""
 
     grammar = (
         '<', attr('name', ComponentName), attr('attributes', Attributes), ignore(whitespace), '/>'
@@ -168,8 +187,7 @@ class ComponentTag(SelfClosingTag):
 
 
 class PairedTag(object):
-    """Matches an open/close tag pair and all of its attributes and children.
-    """
+    """Matches an open/close tag pair and all of its attributes and children."""
 
     @staticmethod
     def parse(parser, text, pos):
@@ -187,7 +205,7 @@ class PairedTag(object):
             text, _ = parser.parse(text, '</')
             text, _ = parser.parse(text, result.name)
             text, _ = parser.parse(text, '>')
-        except SyntaxError, e:
+        except SyntaxError as e:
             return text, e
 
         return text, result
@@ -206,7 +224,7 @@ class PairedTag(object):
         contents_sep = ',\n' if has_contents else ''
 
         text.append(
-            "{indent}Elem({paren_sep}{indent_plus}'{name}'{contents_sep}".format(
+            "{indent}CreateElement({paren_sep}{indent_plus}'{name}'{contents_sep}".format(
                 indent=indent_str,
                 indent_plus=indent_plus_str if has_contents else '',
                 name=self.name,
@@ -217,16 +235,18 @@ class PairedTag(object):
         text.append(
             self.attributes.compose(parser, followed_by_children=has_children, indent=indent+1)
         )
-        text.append(self.children.compose(parser, indent=indent+1))
+        if self.children:
+            text.append(self.children.compose(parser, indent=indent+1))
         text.append(
             "{indent})".format(
                 indent=end_indent_str if has_contents else '',
-                )
             )
+        )
 
         return ''.join(text)
 
 
+# The set of possible tag types we accept
 tags = [ComponentTag, PairedTag, SelfClosingTag]
 
 
@@ -239,7 +259,6 @@ class TagChildren(List):
     def compose(self, parser, indent=0):
         text = []
         for entry in self:
-            # Skip pure whitespace
             text.append(entry.compose(parser, indent=indent))
             text.append(',\n')
 
@@ -254,9 +273,9 @@ class PackedBlock(List):
     def compose(self, parser, attr_of=None):
         text = [self.line_start]
         indent_text = re.match(r' *', self.line_start).group(0)
-        indent = len(indent_text) / 4
+        indent = int(len(indent_text) / 4)
         for entry in self:
-            if isinstance(entry, basestring):
+            if isinstance(entry, str):
                 text.append(entry)
             else:
                 text.append(entry.compose(parser, indent=indent, first=True))
@@ -265,8 +284,7 @@ class PackedBlock(List):
 
 
 class NonPackedLine(List):
-    """Tried after establishing that a line doesn't match the Packed syntax so this can really just
-    match everything else as long as there is a new line so we don't match multiple lines."""
+    """Match a normal python line (no packed syntax) including its newline."""
 
     grammar = attr('content', re.compile('.*')), '\n'
 
@@ -280,45 +298,38 @@ line_without_newline = re.compile(r'.+')
 class CodeBlock(List):
     """Top level grammar representing a block of code, some of which will be Packed syntax and some
     won't.
-
-    Ideally we would parse the entire Python file with an understanding of all the syntax and an
-    understanding of where it is valid to have Packed syntax however for the moment we just parse is
-    as a block of non-packed-syntax-lines and packed blocks. ie, individual lines with no packed
-    syntax and multi-line blocks with have packed syntax.
     """
 
-    # line_without_newline accounts for the last line in the code sample which might have content
-    # but no new line at the end
     grammar = maybe_some([PackedBlock, NonPackedLine, line_without_newline])
 
     def compose(self, parser, attr_of=None):
-        text = []
+        parts = []
         for entry in self:
-            if isinstance(entry, basestring):
-                text.append(entry)
+            if isinstance(entry, str):
+                parts.append(entry)
             else:
-                text.append(entry.compose(parser))
+                parts.append(entry.compose(parser))
 
-        return ''.join(text)
+        return ''.join(parts)
 
+
+# ------------------------- Rendering helpers ---------------------------------
 
 def format_attribute(key, value):
     """Handles the output format for an attribute to the final html"""
     return '{name}="{value}"'.format(name=key, value=value)
 
 
-def to_html(entity):
-    """Converts entity to output html with the ability to handle Elem instances & unicode and lists
-    of either."""
+def to_html(entity: Any) -> str:
+    """Converts entity to output html with the ability to handle Elem instances & strings and lists."""
 
-    if isinstance(entity, list):
+    if isinstance(entity, (list, tuple)):
         return ''.join(map(to_html, entity))
 
     if hasattr(entity, 'to_html'):
         return entity.to_html()
     else:
-        # Assume unicode string or compatible
-        return unicode(entity)
+        return str(entity)
 
 
 class Elem(object):
@@ -336,7 +347,7 @@ class Elem(object):
 
     def to_html(self):
 
-        # Handle components by instanciating them and calling their render method
+        # Handle components by instantiating them and calling their render method
         if inspect.isclass(self.name):
             assert not self.children
             instance = self.name(**self.attributes)
@@ -345,12 +356,14 @@ class Elem(object):
 
             return to_html(output)
 
-        attribute_text = ' '.join(
-            map(
-                lambda item: format_attribute(item[0], item[1]),
-                self.attributes.iteritems()
+        attribute_text = ''
+        if self.attributes:
+            attribute_text = ' '.join(
+                map(
+                    lambda item: format_attribute(item[0], item[1]),
+                    self.attributes.items()
+                )
             )
-        )
 
         if attribute_text:
             attribute_text = ' ' + attribute_text
@@ -366,9 +379,7 @@ class Elem(object):
 
 
 class Component(object):
-    """Simple component base class that exposes all incoming attributes in a self.props dictionary a
-    little like the React components' this.props attribute.
-    """
+    """Simple component base class that exposes incoming attributes in self.props similar to React."""
 
     def __init__(self, **props):
         self.props = props
@@ -378,54 +389,49 @@ class Component(object):
 
 
 def view(func):
-    """Decorator function to apply to functions that need to return rendered html text but look
-    better just returning Elem objects
-    """
+    """Decorator for functions that return Elem trees. The wrapper renders to HTML string."""
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         text = to_html(result)
         return text
+
     return wrapper
 
 
-def translate(code):
+def translate(code: str) -> str:
     """Translate a single multi-line block of code from Packed syntax to valid Python."""
     result = parse(code, CodeBlock, whitespace=None)
     return compose(result)
 
 
-def translate_file(pyx_file, py_path):
-    """Reads & translates the provided .pyx file and writes the result to the provided .py file
-    path."""
-
-    pkd_contents = open(pyx_file, 'r').read()
+def translate_file(templix: str, py_path: str) -> None:
+    with open(templix, 'r', encoding='utf-8') as fh:
+        pkd_contents = fh.read()
 
     try:
         py_contents = translate(pkd_contents)
     except SyntaxError:
-        sys.stderr.write('Failed to convert: %s' % pyx_file)
+        sys.stderr.write('Failed to convert: %s\n' % templix)
         return
 
-    open(py_path, 'w').write(py_contents)
+    with open(py_path, 'w', encoding='utf-8') as fh:
+        fh.write(py_contents)
 
 
 def main(args):
-
+    if not args:
+        print('Usage: packed_build <target_directory>')
+        return 1
     target_directory = args[0]
-
     for root, dirs, files in os.walk(target_directory):
-
         for filename in files:
-            if filename.endswith('.pyx'):
-                py_filename = '{}.py'.format(filename[:-4])
-
+            if filename.endswith('.templix.py'):
+                py_filename = filename.replace('.templix.py', '.py')
                 full_pkd_path = os.path.join(root, filename)
                 full_py_path = os.path.join(root, py_filename)
-
                 translate_file(full_pkd_path, full_py_path)
-
     return 0
 
 

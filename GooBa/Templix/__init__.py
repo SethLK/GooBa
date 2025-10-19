@@ -7,4 +7,4 @@
 
 # from Decorator import *
 
-from Templix import view
+from .Templix import view, Component

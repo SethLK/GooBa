@@ -62,14 +62,15 @@
 # doc.build()
 
 from GooBa import Document, CreateElement, Router
+from something import main_page, tag
 
 doc = Document()
 container = CreateElement('div',{'id': 'root'})
 router = Router()
 
 # Clean, readable syntax
-home = CreateElement('div', {'id': 'home'},
-    CreateElement('h1', {}, 'Welcome to GooBa!'),
+home = CreateElement('div', {'id': 'home'},"Hello",
+    CreateElement('h1', {}, 'Welcome to GooBa!', ),
     CreateElement('p', {}, 'This works perfectly!'),
     CreateElement('button', {'onclick': "alert('Hello!')"}, 'Click me')
 )
@@ -79,7 +80,12 @@ home.style = {
     "color": "#fff",
 }
 
-about = CreateElement('h1', {'id': 'about'}, 'About')
+about = CreateElement('h1', {'id': 'about'}, 'About',
+                      main_page(),
+                      tag()
+
+                      )
+
 
 # param = CreateElement('div', {'id': 'param'}, 'User ID: {{id}}')
 
