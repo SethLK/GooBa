@@ -163,6 +163,62 @@ class CreateElement:
             return self.__str__() + other.__str__()
         return self.__str__() + str(other)
 
+    def _escape_js_string(s: str) -> str:
+        return (
+            s.replace("\\", "\\\\")  # escape backslashes first
+            .replace("'", "\\'")  # escape single quotes
+            .replace("\n", "\\n")  # escape newlines
+            .replace("\r", "\\r")
+        )
+
+    def to_js_dom(self, var_prefix="el", depth=0):
+        lines = []
+        indent = "    " * depth
+        var_name = f"{var_prefix}_{depth}_{self.tag}"
+
+        lines.append(f"{indent}const {var_name} = document.createElement('{self.tag}');")
+
+        for key, value in self.attributes.items():
+            if key == "className":
+                key = "class"
+            if key == "id":
+                lines.append(f"{indent}{var_name}.id = '{value}';")
+            elif key == "onclick":
+                lines.append(f"{indent}{var_name}.onclick = () => {value};")
+            else:
+                lines.append(f"{indent}{var_name}.setAttribute('{key}', '{value}');")
+
+        for s_key, s_val in self.style.items():
+            lines.append(f"{indent}{var_name}.style.{s_key.replace('-', '_')} = '{s_val}';")
+
+        # for child in self.children:
+        #     if isinstance(child, str):
+        #         lines.append(f"{indent}{var_name}.appendChild(document.createTextNode('{child}'));")
+        #     elif isinstance(child, CreateElement):
+        #         child_lines, child_var = child.to_js_dom(var_prefix, depth + 1)
+        #         lines.extend(child_lines)
+        #         lines.append(f"{indent}{var_name}.appendChild({child_var});")
+
+        for child in self.children:
+            if isinstance(child, str):
+                escaped = (
+                    child.replace("\\", "\\\\")
+                    .replace("'", "\\'")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r")
+                )
+                lines.append(f"{indent}{var_name}.appendChild(document.createTextNode('{escaped}'));")
+            elif isinstance(child, CreateElement):
+                child_lines, child_var = child.to_js_dom(var_prefix, depth + 1)
+                lines.extend(child_lines)
+                lines.append(f"{indent}{var_name}.appendChild({child_var});")
+
+        return lines, var_name
+
+    def render_js(elem, root_id="root"):
+        lines, root_var = elem.to_js_dom()
+        lines.append(f"document.getElementById('{root_id}').appendChild({root_var});")
+        return "\n".join(lines)
 
 class Image(CreateElement):
     def __init__(self, tag, **attributes):
@@ -184,7 +240,6 @@ class Image(CreateElement):
         else:
             return self.__str__() + str(other)
 
-
 class CreateLink(CreateElement):
     def __init__(self, tag, **attributes):
         super().__init__('a', **attributes)
@@ -195,14 +250,12 @@ class CreateLink(CreateElement):
         attribute_string = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
         return f'<a href="{self.href}" {attribute_string}>'
 
-
 class Methods(Enum):
     GET = "get"
     POST = "post"
     PUT = "put"
     PATCH = "patch"
     DELETE = "delete"
-
 
 class CreateForm(CreateElement):
     def __init__(self, action='', method='POST', **attributes):

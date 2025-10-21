@@ -50,7 +50,7 @@ class Document:
         
         
         <script src="/page.js"></script>
-        <script src="/router.js"></script>
+        <script src="/main.js"></script>
         {external_js_str}
         <script src="/hmr.js"></script>
         

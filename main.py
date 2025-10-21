@@ -83,23 +83,14 @@ home.style = {
 about = CreateElement('h1', {'id': 'about'}, 'About',
                       main_page(),
                       tag()
-
                       )
 
-
-# param = CreateElement('div', {'id': 'param'}, 'User ID: {{id}}')
 
 router.render('/', home)
 router.render('/about', about)
 router.render('/<id>', CreateElement('div', {'id': 'param'}, 'User ID: {{id}}'))
 
 router.render('/something/<id>', CreateElement('div', {'id': 'param'}, 'User ID: {{id}}'))
-#
-# router.render('/api/<id>/<action>',
-#     CreateElement('div', {'class_name': 'api'},
-#         'API /{{id}}/{{action}}'
-#     )
-# )
 
 router.run('root')
 doc.body(container)

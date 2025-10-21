@@ -1,7 +1,8 @@
 import re
 from .router_js import page
 
-from GooBa import Parent
+from GooBa import Parent, CreateElement
+
 
 class Router(object):
     def __init__(self):
@@ -10,13 +11,28 @@ class Router(object):
         self.param = None
         self.param_routes = {}
 
+    # def render(self, route, param_content):
+    #     #     content = str(param_content)
+    #     #
+    #     #     if '<' in route and '>' in route:
+    #     #         param_names = re.findall(r'<(?:int:|str:)?([^>]+)>', route)
+    #     #         js_route = route
+    #     #         js_route = re.sub(r'<([^>]+)>', r':\1', js_route)
+    #     #         self.dynamic_routes.append((js_route, content, param_names))
+    #     #     else:
+    #     #         self.routes[route] = content
+
     def render(self, route, param_content):
-        content = str(param_content)
+        if isinstance(param_content, CreateElement):
+            # Generate DOM code instead of string HTML
+            content, root_var = param_content.to_js_dom()
+            content = "\n".join(content) + f"\ndocument.getElementById('root').appendChild({root_var});"
+        else:
+            content = str(param_content)
 
         if '<' in route and '>' in route:
             param_names = re.findall(r'<(?:int:|str:)?([^>]+)>', route)
-            js_route = route
-            js_route = re.sub(r'<([^>]+)>', r':\1', js_route)
+            js_route = re.sub(r'<([^>]+)>', r':\1', route)
             self.dynamic_routes.append((js_route, content, param_names))
         else:
             self.routes[route] = content
@@ -27,21 +43,37 @@ class Router(object):
         pattern = re.sub(r'<(\w+)>', r'(?P<\1>[^/]+)', path)
         return f'^{pattern}$'
 
+    # def _escape_for_js(self, content):
+    #     """Escape HTML content for JavaScript template literals"""
+    #     # Escape backslashes first
+    #     content = content.replace('\\', '\\\\')
+    #     # Escape backticks
+    #     content = content.replace('`', '\\`')
+    #     # Escape $ for template literals
+    #     content = content.replace('$', '\\$')
+    #     # Escape newlines
+    #     content = content.replace('\n', '\\n')
+    #     # Escape carriage returns
+    #     content = content.replace('\r', '\\r')
+    #     # Escape tabs
+    #     content = content.replace('\t', '\\t')
+    #     return content
+
+    # def _escape_for_js(self, content):
+    #     if "document.createElement" in content:
+    #         return content  # it's JS DOM code, not HTML
+
     def _escape_for_js(self, content):
-        """Escape HTML content for JavaScript template literals"""
-        # Escape backslashes first
-        content = content.replace('\\', '\\\\')
-        # Escape backticks
-        content = content.replace('`', '\\`')
-        # Escape $ for template literals
-        content = content.replace('$', '\\$')
-        # Escape newlines
-        content = content.replace('\n', '\\n')
-        # Escape carriage returns
-        content = content.replace('\r', '\\r')
-        # Escape tabs
-        content = content.replace('\t', '\\t')
-        return content
+        if "document.createElement" in content:
+            return content  # it's JS DOM code, not HTML
+        return (
+            content.replace("\\", "\\\\")
+            .replace("`", "\\`")
+            .replace("$", "\\$")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+        )
 
     def _get_param_replacement_code(self, param_names):
         """Generate JavaScript code for parameter replacement"""
@@ -56,38 +88,80 @@ class Router(object):
         """Generate and write the router.js file"""
 
         # Generate static route registrations
+#         static_routes_js = []
+#         for path, content in self.routes.items():
+#             # Escape content for JavaScript
+#             escaped_content = self._escape_for_js(content)
+#             static_routes_js.append(f'''
+# page('{path}', () => {{
+#     render(`{escaped_content}`);
+# }});''')
+#
+#         static_routes_code = '\n'.join(static_routes_js)
+
+        # Generate static route registrations
         static_routes_js = []
         for path, content in self.routes.items():
-            # Escape content for JavaScript
-            escaped_content = self._escape_for_js(content)
-            static_routes_js.append(f'''
-page('{path}', () => {{
-    render(`{escaped_content}`);
-}});''')
+            if "document.createElement" in content:
+                # It's DOM-based JS
+                static_routes_js.append(f'''
+        page('{path}', () => {{
+        {content}
+        }});''')
+            else:
+                # HTML string fallback
+                escaped_content = self._escape_for_js(content)
+                static_routes_js.append(f'''
+        page('{path}', () => {{
+            render(`{escaped_content}`);
+        }});''')
 
         static_routes_code = '\n'.join(static_routes_js)
+        # Generate dynamic route registrations
+#         dynamic_routes_js = []
+#         for js_route, content, param_names in self.dynamic_routes:
+#             # Escape content for JavaScript
+#             escaped_content = self._escape_for_js(content)
+#
+#             if param_names:
+#                 # Generate parameter replacement logic
+#                 param_replacements = self._get_param_replacement_code(param_names)
+#
+#                 dynamic_routes_js.append(f'''
+# page('{js_route}', (ctx) => {{
+#     let html = `{escaped_content}`;
+#     {param_replacements}
+#     render(html);
+# }});''')
+#             else:
+#                 dynamic_routes_js.append(f'''
+# page('{js_route}', (ctx) => {{
+#     render(`{escaped_content}`);
+# }});''')
 
         # Generate dynamic route registrations
         dynamic_routes_js = []
         for js_route, content, param_names in self.dynamic_routes:
-            # Escape content for JavaScript
-            escaped_content = self._escape_for_js(content)
-
-            if param_names:
-                # Generate parameter replacement logic
-                param_replacements = self._get_param_replacement_code(param_names)
-
+            if "document.createElement" in content:
                 dynamic_routes_js.append(f'''
-page('{js_route}', (ctx) => {{
-    let html = `{escaped_content}`;
-    {param_replacements}
-    render(html);
-}});''')
+        page('{js_route}', (ctx) => {{
+        {content}
+        }});''')
             else:
-                dynamic_routes_js.append(f'''
-page('{js_route}', (ctx) => {{
-    render(`{escaped_content}`);
-}});''')
+                escaped_content = self._escape_for_js(content)
+                if param_names:
+                    param_replacements = self._get_param_replacement_code(param_names)
+                    dynamic_routes_js.append(f'''
+        page('{js_route}', (ctx) => {{
+            let html = `{escaped_content}`;
+            {param_replacements}
+            render(html);
+        }});''')
+                else:
+                    dynamic_routes_js.append(f'''
+        page('{js_route}', (ctx) => {{
+            render(`{escaped_content}`);
+        }});''')
 
         dynamic_routes_code = '\n'.join(dynamic_routes_js)
 
@@ -113,7 +187,7 @@ page.start();
 '''
 
         # Write the router.js file
-        with open('./output/router.js', 'w') as file:
+        with open('./output/main.js', 'w') as file:
             file.write(js_code)
 
         # Write the page.js library file
