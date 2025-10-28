@@ -46,8 +46,15 @@ class CreateElement:
                 lines.append(f"{indent}{var_name}.className = '{self._escape_js(value)}';")
             elif key == "id":
                 lines.append(f"{indent}{var_name}.id = '{self._escape_js(value)}';")
+            # elif key.startswith("on"):
+            #     lines.append(f"{indent}{var_name}.{key} = {value};")
             elif key.startswith("on"):
-                lines.append(f"{indent}{var_name}.{key} = {value};")
+                # Wrap in a function if it's a JS expression string
+                if isinstance(value, str) and not value.strip().startswith("function"):
+                    lines.append(f"{indent}{var_name}.{key} = () => {value};")
+                else:
+                    lines.append(f"{indent}{var_name}.{key} = {value};")
+
             else:
                 lines.append(f"{indent}{var_name}.setAttribute('{key}', '{self._escape_js(value)}');")
 
