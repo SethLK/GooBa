@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 
 
@@ -183,13 +184,27 @@ class CreateElement:
                 key = "class"
             if key == "id":
                 lines.append(f"{indent}{var_name}.id = '{value}';")
-            elif key == "onclick":
-                lines.append(f"{indent}{var_name}.onclick = () => {value};")
+            # elif key == "onclick":
+            #     lines.append(f"{indent}{var_name}.onclick = () => {value};")
             else:
-                lines.append(f"{indent}{var_name}.setAttribute('{key}', '{value}');")
+                # lines.append(f"{indent}{var_name}.setAttribute('{key}', '{value}');")
+                escaped_value = (
+                    str(value)
+                    .replace("\\", "\\\\")
+                    .replace("'", "\\'")
+                    .replace('"', '\\"')
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r")
+                )
+                lines.append(f"{indent}{var_name}.setAttribute('{key}', '{escaped_value}');")
+
+        # for s_key, s_val in self.style.items():
+        #     lines.append(f"{indent}{var_name}.style.{s_key.replace('-', '_')} = '{s_val}';")
 
         for s_key, s_val in self.style.items():
-            lines.append(f"{indent}{var_name}.style.{s_key.replace('-', '_')} = '{s_val}';")
+            # convert kebab-case to camelCase (background-color → backgroundColor)
+            js_key = re.sub(r'-([a-z])', lambda m: m.group(1).upper(), s_key)
+            lines.append(f"{indent}{var_name}.style.{js_key} = '{s_val}';")
 
         # for child in self.children:
         #     if isinstance(child, str):
@@ -212,6 +227,49 @@ class CreateElement:
                 child_lines, child_var = child.to_js_dom(var_prefix, depth + 1)
                 lines.extend(child_lines)
                 lines.append(f"{indent}{var_name}.appendChild({child_var});")
+
+            # if isinstance(child, str):
+            #     if child.strip().startswith("<"):
+            #         # Treat as HTML snippet
+            #         escaped = child.replace("\\", "\\\\").replace("'", "\\'")
+            #         lines.append(f"{indent}const temp = document.createElement('div');")
+            #         lines.append(f"{indent}temp.innerHTML = '{escaped}';")
+            #         lines.append(f"{indent}while (temp.firstChild) {var_name}.appendChild(temp.firstChild);")
+            #     else:
+            #         # Treat as plain text
+            #         escaped = (
+            #             child.replace("\\", "\\\\")
+            #             .replace("'", "\\'")
+            #             .replace("\n", "\\n")
+            #             .replace("\r", "\\r")
+            #         )
+            #         lines.append(f"{indent}{var_name}.appendChild(document.createTextNode('{escaped}'));")
+
+        # for child in self.children:
+        #     if isinstance(child, str):
+        #         # Check if child looks like HTML
+        #         if child.strip().startswith("<") and child.strip().endswith(">"):
+        #             # Use innerHTML to insert actual HTML content
+        #             escaped = (
+        #                 child
+        #                 .replace("\\", "\\\\")
+        #                 .replace("`", "\\`")
+        #                 .replace("${", "\\${")  # avoid breaking template strings
+        #             )
+        #             lines.append(f"{indent}{var_name}.insertAdjacentHTML('beforeend', `{escaped}`);")
+        #         else:
+        #             # Treat as plain text
+        #             escaped = (
+        #                 child.replace("\\", "\\\\")
+        #                 .replace("'", "\\'")
+        #                 .replace("\n", "\\n")
+        #                 .replace("\r", "\\r")
+        #             )
+        #             lines.append(f"{indent}{var_name}.appendChild(document.createTextNode('{escaped}'));")
+        #     elif isinstance(child, CreateElement):
+        #         child_lines, child_var = child.to_js_dom(var_prefix, depth + 1)
+        #         lines.extend(child_lines)
+        #         lines.append(f"{indent}{var_name}.appendChild({child_var});")
 
         return lines, var_name
 

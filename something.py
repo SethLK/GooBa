@@ -1,27 +1,8 @@
 from GooBa.Templix import view, Component
 from GooBa import CreateElement
 
-class ShareLink(Component):
-    def render(self):
-        return CreateElement(
-            'a',
-            {
-                'href': self.props['link'],
-            },
-            'Share on internet',
-        )
 
-@view
-def tag():
-    share = "https://example.com"
-    return CreateElement(
-        ShareLink,
-        {
-            'link': share,
-        },
-    )
 
-@view
 def main_page():
     return (
         CreateElement(
@@ -29,18 +10,67 @@ def main_page():
             {},
             '',
             CreateElement(
-                'h1',
-                {},
-                'Hello ',
-                CreateElement('br'),
-                ' WOrld',
-            ),
-            '',
-            CreateElement(
                 'img',
                 {
                     'src': 'https://www.w3schools.com/html/pic_trulli.jpg',
                 },
+            ),
+            '',
+        )
+    )
+
+
+def main_page2():
+    return (
+        CreateElement(
+            'div',
+            {},
+            '',
+            CreateElement(
+                'p',
+                {},
+                'Hello There',
+            ),
+            '',
+            CreateElement(
+                'div',
+                {
+                    'class': 'container',
+                },
+                CreateElement(
+                    'h1',
+                    {},
+                    ' Hello There',
+                ),
+            ),
+            '',
+        )
+    )
+
+
+
+def main_page2():
+    return (
+        CreateElement(
+            'div',
+            {},
+            '',
+            CreateElement(
+                'p',
+                {},
+                'Hello There',
+            ),
+            '',
+            CreateElement(
+                'div',
+                {
+                    'class': 'container',
+                },
+                CreateElement(
+                    'h1',
+                    {},
+                    ' Hello There',
+                ),
             ),
             '',
         )

@@ -458,6 +458,7 @@ def translate_file(templix: str, py_path: str) -> None:
 
     try:
         py_contents = translate(pkd_contents)
+        py_contents = py_contents.replace("@view\n", "\n")
     except SyntaxError:
         sys.stderr.write('Failed to convert: %s\n' % templix)
         return

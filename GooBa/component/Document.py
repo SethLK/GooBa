@@ -48,7 +48,9 @@ class Document:
         {self.body_}
         </body>
         
+        <div id="root">
         
+        </div>
         <script src="/page.js"></script>
         <script src="/main.js"></script>
         {external_js_str}

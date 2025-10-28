@@ -143,10 +143,15 @@ class Router(object):
         dynamic_routes_js = []
         for js_route, content, param_names in self.dynamic_routes:
             if "document.createElement" in content:
+                # Replace placeholders {{param}} in DOM creation JS
+                for param in param_names:
+                    content = content.replace(f"{{{{{param}}}}}", f"${{ctx.params.{param}}}")
                 dynamic_routes_js.append(f'''
-        page('{js_route}', (ctx) => {{
-        {content}
-        }});''')
+                    page('{js_route}', (ctx) => {{
+                        const html = `{content}`;
+                        eval(html);
+                    }});''')
+
             else:
                 escaped_content = self._escape_for_js(content)
                 if param_names:
