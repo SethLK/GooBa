@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+
+
 """
 pyPEG parsing framework
 
@@ -7,8 +10,6 @@ languages for Python 2.7 and 3.x, see http://fdik.org/pyPEG2
 Copyleft 2012, Volker Birk.
 This program is under GNU General Public License 2.0.
 """
-
-from __future__ import unicode_literals
 
 try:
     range = xrange
@@ -20,9 +21,6 @@ __version__ = 2.15
 __author__ = "Volker Birk"
 __license__ = "This program is under GNU General Public License 2.0."
 __url__ = "http://fdik.org/pyPEG"
-
-# C:/.../pypeg/__init__.py
-from .xmlast import *  # if xmlast.py defines what you need
 
 import re
 import sys
@@ -51,7 +49,7 @@ _RegEx = type(word)
 restline = re.compile(r".*")
 """Regular expression for rest of line."""
 
-whitespace = re.compile("(?m)\s+")
+whitespace = re.compile(r"(?m)\s+")
 """Regular expression for scanning whitespace."""
 
 comment_sh = re.compile(r"\#.*")
@@ -125,7 +123,6 @@ except SyntaxError:
         """Generate a grammar for a simple comma separated list."""
         return _csl(",", *thing)
 
-
 def attr(name, thing=word, subtype=None):
     """Generate an Attribute with that name, referencing the thing.
 
@@ -158,10 +155,6 @@ def attributes(grammar, invisible=False):
         for e in grammar:
             for a in attributes(e, invisible):
                 yield a
-
-
-class Whitespace(str):
-    grammar = whitespace
 
 
 class RegEx(object):
@@ -435,7 +428,7 @@ class Symbol(str):
     """Use to scan Symbols.
 
     Class variables:
-        regex               regular expression to scan, default r"\w+"
+        # regex               regular expression to scan, default
         check_keywords      flag if a Symbol is checked for not being a Keyword
                             default: False
     """
@@ -473,7 +466,7 @@ class Keyword(Symbol):
     """Use to access the keyword table.
 
     Class variables:
-        regex   regular expression to scan, default r"\w+"
+        # regex   regular expression to scan, default
         table   Namespace with keyword table
     """
 
@@ -657,7 +650,7 @@ def parse(text, thing, filename=None, whitespace=whitespace, comment=None,
         thing       grammar for things to parse
         filename    filename where text is origin from
         whitespace  regular expression to skip whitespace
-                    default: regex "(?m)\s+"
+                    # default: regex
         comment     grammar to parse comments
                     default: None
         keep_feeble_things
@@ -731,7 +724,7 @@ class Parser(object):
 
     Instance variables:
         whitespace          regular expression to scan whitespace
-                            default: "(?m)\s+"
+                            # default:
         comment             grammar to parse comments
         last_error          syntax error which ended parsing
         indent              string to use to indent while composing
@@ -1511,3 +1504,210 @@ class Parser(object):
             raise GrammarTypeError("in grammar: " + repr(grammar))
 
         return result
+
+
+"""
+XML AST generator
+
+pyPEG parsing framework
+
+Copyleft 2012, Volker Birk.
+This program is under GNU General Public License 2.0.
+"""
+
+try:
+    str = unicode
+except NameError:
+    pass
+
+try:
+    import lxml
+    from lxml import etree
+except ImportError:
+    import xml.etree.ElementTree as etree
+
+if __debug__:
+    import warnings
+# import pypeg2
+
+
+def name():
+    """Generate a grammar for a symbol with name."""
+    return attr("name", Symbol)
+
+
+def create_tree(thing, parent=None, object_names=False):
+    """Create an XML etree from a thing.
+
+    Arguments:
+        thing           thing to interpret
+        parent          etree.Element to put subtree into
+                        default: create a new Element tree
+        object_names    experimental feature: if True tag names are object
+                        names instead of types
+
+    Returns:
+        etree.Element instance created
+    """
+
+    try:
+        grammar = type(thing).grammar
+    except AttributeError:
+        if isinstance(thing, list):
+            grammar = csl(name())
+        else:
+            grammar = word
+
+    name = type(thing).__name__
+
+    if object_names:
+        try:
+            name = str(thing.name)
+            name = name.replace(" ", "_")
+        except AttributeError:
+            pass
+
+    if parent is None:
+        me = etree.Element(name)
+    else:
+        me = etree.SubElement(parent, name)
+
+    for e in attributes(grammar):
+        if object_names and e.name == "name":
+            if name != type(thing).__name__:
+                continue
+        key, value = e.name, getattr(thing, e.name, None)
+        if value is not None:
+            if _issubclass(e.thing, (str, int, Literal)) \
+                    or type(e.thing) == _RegEx:
+                me.set(key, str(value))
+            else:
+                create_tree(value, me, object_names)
+
+    if isinstance(thing, list):
+        things = thing
+    elif isinstance(thing, Namespace):
+        things = thing.values()
+    else:
+        things = []
+
+    last = None
+    for t in things:
+        if type(t) == str:
+            if last is not None:
+                last.tail = str(t)
+            else:
+                me.text = str(t)
+        else:
+            last = create_tree(t, me, object_names)
+
+    if isinstance(thing, str):
+        me.text = str(thing)
+
+    return me
+
+
+def thing2xml(thing, pretty=False, object_names=False):
+    """Create XML text from a thing.
+
+    Arguments:
+        thing           thing to interpret
+        pretty          True if XML should be indented
+                        False if XML should be plain
+        object_names    experimental feature: if True tag names are object
+                        names instead of types
+
+    Returns:
+        bytes with encoded XML
+    """
+
+    tree = create_tree(thing, None, object_names)
+    try:
+        if lxml:
+            return etree.tostring(tree, pretty_print=pretty)
+    except NameError:
+        if __debug__:
+            if pretty:
+                warnings.warn("lxml is needed for pretty printing",
+                              ImportWarning)
+        return etree.tostring(tree)
+
+
+def create_thing(element, symbol_table):
+    """Create thing from an XML element.
+
+    Arguments:
+        element         etree.Element instance to read
+        symbol_table    symbol table where the classes can be found
+
+    Returns:
+        thing created
+    """
+
+    C = symbol_table[element.tag]
+    if element.text:
+        thing = C(element.text)
+    else:
+        thing = C()
+
+    subs = iter(element)
+    iterated_already = False
+
+    try:
+        grammar = C.grammar
+    except AttributeError:
+        pass
+    else:
+        for e in attributes(grammar):
+            key = e.name
+            if _issubclass(e.thing, (str, int, Literal)) \
+                    or type(e.thing) == _RegEx:
+                try:
+                    value = element.attrib[e.name]
+                except KeyError:
+                    pass
+                else:
+                    setattr(thing, key, e.thing(value))
+            else:
+                try:
+                    if not iterated_already:
+                        iterated_already = True
+                        sub = next(subs)
+                except StopIteration:
+                    pass
+                if sub.tag == e.thing.__name__:
+                    iterated_already = False
+                    t = create_thing(sub, symbol_table)
+                    setattr(thing, key, t)
+
+    if issubclass(C, list) or issubclass(C, Namespace):
+        try:
+            while True:
+                if iterated_already:
+                    iterated_alread = False
+                else:
+                    sub = next(subs)
+                t = create_thing(sub, symbol_table)
+                if isinstance(thing, List):
+                    thing.append(t)
+                else:
+                    thing[t.name] = t
+        except StopIteration:
+            pass
+
+    return thing
+
+
+def xml2thing(xml, symbol_table):
+    """Create thing from XML text.
+
+    Arguments:
+        xml             bytes with encoded XML
+        symbol_table    symbol table where the classes can be found
+
+    Returns:
+        created thing
+    """
+
+    element = etree.fromstring(xml)
+    return create_thing(element, symbol_table)

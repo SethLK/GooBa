@@ -1,9 +1,12 @@
 
-from GooBa import Document, CreateElement, Router
+from GooBa import Document, CreateElement, Router, CreateStyle
 from something import main_page, main_page2
+from user_page import User_page, pageStyle
 
 doc = Document()
 router = Router()
+
+
 
 # Clean, readable syntax
 home = CreateElement('div', {'id': 'home'},"Hello",
@@ -29,12 +32,14 @@ about = CreateElement('div', {'id': 'about'},
     main_page2()
 )
 
-
 router.render('/', home)
+router.render('/user', User_page())
 router.render('/about', about)
 router.render('/<id>', CreateElement('div', {'id': 'param'}, 'User ID: {{id}}'))
 
 router.render('/something/<id>', CreateElement('div', {'id': 'param'}, 'User ID: {{id}}'))
+
+doc.appendHead(pageStyle)
 
 router.run('root')
 doc.build()
