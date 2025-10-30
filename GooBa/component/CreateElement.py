@@ -35,7 +35,7 @@ class CreateElement:
         lines = []
         if self.tag == "#text":
             content = self._escape_js(self.children[0]) if self.children else ""
-            lines.append(f"{indent}const {var_name} = document.createTextNode('{content}');")
+            lines.append(f"{indent}const {var_name} = document.createTextNode(`{content}`);")
             return lines, var_name
 
         lines.append(f"{indent}const {var_name} = document.createElement('{self.tag}');")

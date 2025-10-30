@@ -15,16 +15,32 @@ def main_page2():
     return (
         <div>
         <p>Hello There</p>
-        <div class="container"><h1> Hello There</h1></div>
+        <div class="container">
+    <h1> Hello There</h1>
+    </div>
         </div>
     )
 
 
 @view
-def main_page2():
+def main_page337():
     return (
-        <div>
+        < div>
         <p>Hello There</p>
-        <div class="container"><h1> Hello There</h1></div>
+        <div class="container">
+    <h1> Hello There</h1>
+    </div>
         </div>
+    )
+
+@view
+def user_page():
+    return (
+        < div >
+            < p > Hello There < / p >
+            < div class ="container" >
+
+                < h1 > Hello There < / h1 >
+            < / div >
+        < / div >
     )

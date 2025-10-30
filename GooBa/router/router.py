@@ -148,8 +148,7 @@ class Router(object):
                     content = content.replace(f"{{{{{param}}}}}", f"${{ctx.params.{param}}}")
                 dynamic_routes_js.append(f'''
                     page('{js_route}', (ctx) => {{
-                        const html = `{content}`;
-                        eval(html);
+                        {content}
                     }});''')
 
             else:

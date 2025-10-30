@@ -25,7 +25,7 @@ class ServerManager:
 
     def restart_server(self):
         print(f"\n♻️ Restarting server on port {PORT} ...")
-        subprocess.run(['python', './Gooba/Templix/Templix.py', '.'])
+        subprocess.run(['python', './Gooba/Templix/packed.py', '.'])
         subprocess.run(['python', 'main.py'])
         self.start_server()
 

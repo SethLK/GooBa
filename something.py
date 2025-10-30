@@ -37,11 +37,13 @@ def main_page2():
                 {
                     'class': 'container',
                 },
+                '',
                 CreateElement(
                     'h1',
                     {},
                     ' Hello There',
                 ),
+                '',
             ),
             '',
         )
@@ -49,7 +51,7 @@ def main_page2():
 
 
 
-def main_page2():
+def main_page337():
     return (
         CreateElement(
             'div',
@@ -66,11 +68,43 @@ def main_page2():
                 {
                     'class': 'container',
                 },
+                '',
                 CreateElement(
                     'h1',
                     {},
                     ' Hello There',
                 ),
+                '',
+            ),
+            '',
+        )
+    )
+
+
+def user_page():
+    return (
+        CreateElement(
+            'div',
+            {},
+            '',
+            CreateElement(
+                'p',
+                {},
+                ' Hello There ',
+            ),
+            '',
+            CreateElement(
+                'div',
+                {
+                    'class': 'container',
+                },
+                '',
+                CreateElement(
+                    'h1',
+                    {},
+                    ' Hello There ',
+                ),
+                '',
             ),
             '',
         )
