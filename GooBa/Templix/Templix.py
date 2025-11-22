@@ -1,7 +1,7 @@
 import os
 import sys
 
-from packed import translate_file
+from myown import translate_file
 
 def main(args):
     if not args:
@@ -15,6 +15,7 @@ def main(args):
                 full_pkd_path = os.path.join(root, filename)
                 full_py_path = os.path.join(root, py_filename)
                 translate_file(full_pkd_path, full_py_path)
+
     return 0
 
 

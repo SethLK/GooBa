@@ -1,0 +1,1 @@
+"\ndef user_page():\n    return (\nCreateElement(\n    'div',\n    {},\n    CreateElement(\n        'p',\n        {},\n        ' Hello There '\n    ),\n    '',\n    CreateElement(\n        'div',\n        {\"class\": \"container\"},\n        CreateElement(\n            'h1',\n            {},\n            ' Hello There '\n        ),\n        '',\n    ),\n    '',\n)\n)"

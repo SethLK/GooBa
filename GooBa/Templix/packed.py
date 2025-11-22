@@ -2320,7 +2320,30 @@ def clean_html_whitespace(code: str) -> str:
     # Apply cleanup to every <...> block
     return re.sub(r'<[^>]+>', fix_tag, code)
 
+# def convert_comment(code: str) -> str:
+#     return re.sub(r"(?s)<!--(.*?)-->", r"# \1", code)
 
+def convert_comment(code: str) -> str:
+
+    return code
+
+
+import re
+
+
+def normalize_html(code: str) -> str:
+    # Remove HTML comments (you already handle these)
+    code = re.sub(r'<!--(.*?)-->', lambda m: f"# {m.group(1).strip()}", code, flags=re.DOTALL)
+
+    # Fix invalid spacing in tag syntax
+    code = re.sub(r'<\s+/', '</', code)  # fix < /div -> </div>
+    code = re.sub(r'<\s+', '<', code)  # fix < div -> <div
+    code = re.sub(r'\s+>', '>', code)  # fix <div > -> <div>
+
+    # Optional: collapse repeated blank lines
+    code = re.sub(r'\n\s*\n+', '\n', code)
+
+    return code.strip()
 
 
 # def translate(code: str) -> str:
@@ -2331,10 +2354,11 @@ def clean_html_whitespace(code: str) -> str:
 
 
 def translate(code: str) -> str:
-    """Translate a single multi-line block of code from Packed syntax to valid Python."""
-    clean_code = clean_html_whitespace(code)
+    normalize_code = normalize_html(code)
+    clean_code = clean_html_whitespace(normalize_code)
     result = parse(clean_code, CodeBlock, whitespace=None)
     return compose(result)
+
 
 
 def translate_file(templix: str, py_path: str) -> None:
@@ -2350,3 +2374,17 @@ def translate_file(templix: str, py_path: str) -> None:
 
     with open(py_path, 'w', encoding='utf-8') as fh:
         fh.write(py_contents)
+
+#
+# def translate_file(templix: str, py_path: str) -> None:
+#     with open(templix, 'r', encoding='utf-8') as fh:
+#         pkd_contents = fh.read()
+#     try:
+#         py_contents = translate(pkd_contents)
+#         py_contents = py_contents.replace("@view\n", "\n")
+#     except SyntaxError:
+#         sys.stderr.write('Failed to convert: %s\n' % templix)
+#         return
+#
+#     with open(py_path, 'w', encoding='utf-8') as fh:
+#         fh.write(py_contents)

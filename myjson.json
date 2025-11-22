@@ -1,0 +1,1106 @@
+{
+    "name": "html",
+    "attributes": {
+        "lang": "en"
+    },
+    "children": [
+        {
+            "name": "head",
+            "children": [
+                {
+                    "name": "title",
+                    "value": "W3.CSS Template"
+                },
+                {
+                    "name": "meta",
+                    "attributes": {
+                        "charset": "UTF-8"
+                    }
+                },
+                {
+                    "name": "meta",
+                    "attributes": {
+                        "name": "viewport",
+                        "content": "width=device-width, initial-scale=1"
+                    }
+                },
+                {
+                    "name": "link",
+                    "attributes": {
+                        "rel": "stylesheet",
+                        "href": "https://www.w3schools.com/w3css/5/w3.css"
+                    }
+                },
+                {
+                    "name": "link",
+                    "attributes": {
+                        "rel": "stylesheet",
+                        "href": "https://fonts.googleapis.com/css?family=Lato"
+                    }
+                },
+                {
+                    "name": "link",
+                    "attributes": {
+                        "rel": "stylesheet",
+                        "href": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+                    }
+                },
+                {
+                    "name": "style",
+                    "value": "body {font-family: \"Lato\", sans-serif}\n.mySlides {display: none}"
+                }
+            ]
+        },
+        {
+            "name": "body",
+            "children": [
+                {
+                    "name": "div",
+                    "attributes": {
+                        "class": "w3-top"
+                    },
+                    "children": [
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "class": "w3-bar w3-black w3-card"
+                            },
+                            "children": [
+                                {
+                                    "name": "a",
+                                    "attributes": {
+                                        "class": "w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right",
+                                        "href": "javascript:void(0)",
+                                        "onclick": "myFunction()",
+                                        "title": "Toggle Navigation Menu"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "i",
+                                            "attributes": {
+                                                "class": "fa fa-bars"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "a",
+                                    "attributes": {
+                                        "href": "#",
+                                        "class": "w3-bar-item w3-button w3-padding-large"
+                                    },
+                                    "value": "HOME"
+                                },
+                                {
+                                    "name": "a",
+                                    "attributes": {
+                                        "href": "#band",
+                                        "class": "w3-bar-item w3-button w3-padding-large w3-hide-small"
+                                    },
+                                    "value": "BAND"
+                                },
+                                {
+                                    "name": "a",
+                                    "attributes": {
+                                        "href": "#tour",
+                                        "class": "w3-bar-item w3-button w3-padding-large w3-hide-small"
+                                    },
+                                    "value": "TOUR"
+                                },
+                                {
+                                    "name": "a",
+                                    "attributes": {
+                                        "href": "#contact",
+                                        "class": "w3-bar-item w3-button w3-padding-large w3-hide-small"
+                                    },
+                                    "value": "CONTACT"
+                                },
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-dropdown-hover w3-hide-small"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "button",
+                                            "attributes": {
+                                                "class": "w3-padding-large w3-button",
+                                                "title": "More"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "i",
+                                                    "attributes": {
+                                                        "class": "fa fa-caret-down"
+                                                    }
+                                                }
+                                            ],
+                                            "value": "MORE"
+                                        },
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-dropdown-content w3-bar-block w3-card-4"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "a",
+                                                    "attributes": {
+                                                        "href": "#",
+                                                        "class": "w3-bar-item w3-button"
+                                                    },
+                                                    "value": "Merchandise"
+                                                },
+                                                {
+                                                    "name": "a",
+                                                    "attributes": {
+                                                        "href": "#",
+                                                        "class": "w3-bar-item w3-button"
+                                                    },
+                                                    "value": "Extras"
+                                                },
+                                                {
+                                                    "name": "a",
+                                                    "attributes": {
+                                                        "href": "#",
+                                                        "class": "w3-bar-item w3-button"
+                                                    },
+                                                    "value": "Media"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "a",
+                                    "attributes": {
+                                        "href": "javascript:void(0)",
+                                        "class": "w3-padding-large w3-hover-red w3-hide-small w3-right"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "i",
+                                            "attributes": {
+                                                "class": "fa fa-search"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "div",
+                    "attributes": {
+                        "id": "navDemo",
+                        "class": "w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top",
+                        "style": "margin-top:46px"
+                    },
+                    "children": [
+                        {
+                            "name": "a",
+                            "attributes": {
+                                "href": "#band",
+                                "class": "w3-bar-item w3-button w3-padding-large",
+                                "onclick": "myFunction()"
+                            },
+                            "value": "BAND"
+                        },
+                        {
+                            "name": "a",
+                            "attributes": {
+                                "href": "#tour",
+                                "class": "w3-bar-item w3-button w3-padding-large",
+                                "onclick": "myFunction()"
+                            },
+                            "value": "TOUR"
+                        },
+                        {
+                            "name": "a",
+                            "attributes": {
+                                "href": "#contact",
+                                "class": "w3-bar-item w3-button w3-padding-large",
+                                "onclick": "myFunction()"
+                            },
+                            "value": "CONTACT"
+                        },
+                        {
+                            "name": "a",
+                            "attributes": {
+                                "href": "#",
+                                "class": "w3-bar-item w3-button w3-padding-large",
+                                "onclick": "myFunction()"
+                            },
+                            "value": "MERCH"
+                        }
+                    ]
+                },
+                {
+                    "name": "div",
+                    "attributes": {
+                        "class": "w3-content",
+                        "style": "max-width:2000px;margin-top:46px"
+                    },
+                    "children": [
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "class": "mySlides w3-display-container w3-center"
+                            },
+                            "children": [
+                                {
+                                    "name": "img",
+                                    "attributes": {
+                                        "src": "/w3images/la.jpg",
+                                        "style": "width:100%"
+                                    }
+                                },
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-display-bottommiddle w3-container w3-text-white w3-padding-32 w3-hide-small"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "h3",
+                                            "value": "Los Angeles"
+                                        },
+                                        {
+                                            "name": "p",
+                                            "children": [
+                                                {
+                                                    "name": "b",
+                                                    "value": "We had the best time playing at Venice Beach!"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "class": "mySlides w3-display-container w3-center"
+                            },
+                            "children": [
+                                {
+                                    "name": "img",
+                                    "attributes": {
+                                        "src": "/w3images/ny.jpg",
+                                        "style": "width:100%"
+                                    }
+                                },
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-display-bottommiddle w3-container w3-text-white w3-padding-32 w3-hide-small"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "h3",
+                                            "value": "New York"
+                                        },
+                                        {
+                                            "name": "p",
+                                            "children": [
+                                                {
+                                                    "name": "b",
+                                                    "value": "The atmosphere in New York is lorem ipsum."
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "class": "mySlides w3-display-container w3-center"
+                            },
+                            "children": [
+                                {
+                                    "name": "img",
+                                    "attributes": {
+                                        "src": "/w3images/chicago.jpg",
+                                        "style": "width:100%"
+                                    }
+                                },
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-display-bottommiddle w3-container w3-text-white w3-padding-32 w3-hide-small"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "h3",
+                                            "value": "Chicago"
+                                        },
+                                        {
+                                            "name": "p",
+                                            "children": [
+                                                {
+                                                    "name": "b",
+                                                    "value": "Thank you, Chicago - A night we won't forget."
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "class": "w3-container w3-content w3-center w3-padding-64",
+                                "style": "max-width:800px",
+                                "id": "band"
+                            },
+                            "children": [
+                                {
+                                    "name": "h2",
+                                    "attributes": {
+                                        "class": "w3-wide"
+                                    },
+                                    "value": "THE BAND"
+                                },
+                                {
+                                    "name": "p",
+                                    "attributes": {
+                                        "class": "w3-opacity"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "i",
+                                            "value": "We love music"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "p",
+                                    "attributes": {
+                                        "class": "w3-justify"
+                                    },
+                                    "value": "We have created a fictional band website. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip\n      ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur\n      adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                                },
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-row w3-padding-32"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-third"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "p",
+                                                    "value": "Name"
+                                                },
+                                                {
+                                                    "name": "img",
+                                                    "attributes": {
+                                                        "src": "/w3images/bandmember.jpg",
+                                                        "class": "w3-round w3-margin-bottom",
+                                                        "alt": "Random Name",
+                                                        "style": "width:60%"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-third"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "p",
+                                                    "value": "Name"
+                                                },
+                                                {
+                                                    "name": "img",
+                                                    "attributes": {
+                                                        "src": "/w3images/bandmember.jpg",
+                                                        "class": "w3-round w3-margin-bottom",
+                                                        "alt": "Random Name",
+                                                        "style": "width:60%"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-third"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "p",
+                                                    "value": "Name"
+                                                },
+                                                {
+                                                    "name": "img",
+                                                    "attributes": {
+                                                        "src": "/w3images/bandmember.jpg",
+                                                        "class": "w3-round",
+                                                        "alt": "Random Name",
+                                                        "style": "width:60%"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "class": "w3-black",
+                                "id": "tour"
+                            },
+                            "children": [
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-container w3-content w3-padding-64",
+                                        "style": "max-width:800px"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "h2",
+                                            "attributes": {
+                                                "class": "w3-wide w3-center"
+                                            },
+                                            "value": "TOUR DATES"
+                                        },
+                                        {
+                                            "name": "p",
+                                            "attributes": {
+                                                "class": "w3-opacity w3-center"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "i",
+                                                    "value": "Remember to book your tickets!"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "br"
+                                        },
+                                        {
+                                            "name": "ul",
+                                            "attributes": {
+                                                "class": "w3-ul w3-border w3-white w3-text-grey"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "li",
+                                                    "attributes": {
+                                                        "class": "w3-padding"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "span",
+                                                            "attributes": {
+                                                                "class": "w3-tag w3-red w3-margin-left"
+                                                            },
+                                                            "value": "Sold out"
+                                                        }
+                                                    ],
+                                                    "value": "September"
+                                                },
+                                                {
+                                                    "name": "li",
+                                                    "attributes": {
+                                                        "class": "w3-padding"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "span",
+                                                            "attributes": {
+                                                                "class": "w3-tag w3-red w3-margin-left"
+                                                            },
+                                                            "value": "Sold out"
+                                                        }
+                                                    ],
+                                                    "value": "October"
+                                                },
+                                                {
+                                                    "name": "li",
+                                                    "attributes": {
+                                                        "class": "w3-padding"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "span",
+                                                            "attributes": {
+                                                                "class": "w3-badge w3-right w3-margin-right"
+                                                            },
+                                                            "value": "3"
+                                                        }
+                                                    ],
+                                                    "value": "November"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-row-padding w3-padding-32",
+                                                "style": "margin:0 -16px"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "div",
+                                                    "attributes": {
+                                                        "class": "w3-third w3-margin-bottom"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "img",
+                                                            "attributes": {
+                                                                "src": "/w3images/newyork.jpg",
+                                                                "alt": "New York",
+                                                                "style": "width:100%",
+                                                                "class": "w3-hover-opacity"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "div",
+                                                            "attributes": {
+                                                                "class": "w3-container w3-white"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "name": "p",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "b",
+                                                                            "value": "New York"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "name": "p",
+                                                                    "attributes": {
+                                                                        "class": "w3-opacity"
+                                                                    },
+                                                                    "value": "Fri 27 Nov 2016"
+                                                                },
+                                                                {
+                                                                    "name": "p",
+                                                                    "value": "Praesent tincidunt sed tellus ut rutrum sed vitae justo."
+                                                                },
+                                                                {
+                                                                    "name": "button",
+                                                                    "attributes": {
+                                                                        "class": "w3-button w3-black w3-margin-bottom",
+                                                                        "onclick": "document.getElementById('ticketModal').style.display='block'"
+                                                                    },
+                                                                    "value": "Buy Tickets"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "div",
+                                                    "attributes": {
+                                                        "class": "w3-third w3-margin-bottom"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "img",
+                                                            "attributes": {
+                                                                "src": "/w3images/paris.jpg",
+                                                                "alt": "Paris",
+                                                                "style": "width:100%",
+                                                                "class": "w3-hover-opacity"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "div",
+                                                            "attributes": {
+                                                                "class": "w3-container w3-white"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "name": "p",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "b",
+                                                                            "value": "Paris"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "name": "p",
+                                                                    "attributes": {
+                                                                        "class": "w3-opacity"
+                                                                    },
+                                                                    "value": "Sat 28 Nov 2016"
+                                                                },
+                                                                {
+                                                                    "name": "p",
+                                                                    "value": "Praesent tincidunt sed tellus ut rutrum sed vitae justo."
+                                                                },
+                                                                {
+                                                                    "name": "button",
+                                                                    "attributes": {
+                                                                        "class": "w3-button w3-black w3-margin-bottom",
+                                                                        "onclick": "document.getElementById('ticketModal').style.display='block'"
+                                                                    },
+                                                                    "value": "Buy Tickets"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "div",
+                                                    "attributes": {
+                                                        "class": "w3-third w3-margin-bottom"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "img",
+                                                            "attributes": {
+                                                                "src": "/w3images/sanfran.jpg",
+                                                                "alt": "San Francisco",
+                                                                "style": "width:100%",
+                                                                "class": "w3-hover-opacity"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "div",
+                                                            "attributes": {
+                                                                "class": "w3-container w3-white"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "name": "p",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "b",
+                                                                            "value": "San Francisco"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "name": "p",
+                                                                    "attributes": {
+                                                                        "class": "w3-opacity"
+                                                                    },
+                                                                    "value": "Sun 29 Nov 2016"
+                                                                },
+                                                                {
+                                                                    "name": "p",
+                                                                    "value": "Praesent tincidunt sed tellus ut rutrum sed vitae justo."
+                                                                },
+                                                                {
+                                                                    "name": "button",
+                                                                    "attributes": {
+                                                                        "class": "w3-button w3-black w3-margin-bottom",
+                                                                        "onclick": "document.getElementById('ticketModal').style.display='block'"
+                                                                    },
+                                                                    "value": "Buy Tickets"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "id": "ticketModal",
+                                "class": "w3-modal"
+                            },
+                            "children": [
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-modal-content w3-animate-top w3-card-4"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "header",
+                                            "attributes": {
+                                                "class": "w3-container w3-teal w3-center w3-padding-32"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "span",
+                                                    "attributes": {
+                                                        "onclick": "document.getElementById('ticketModal').style.display='none'",
+                                                        "class": "w3-button w3-teal w3-xlarge w3-display-topright"
+                                                    },
+                                                    "value": "\u00d7"
+                                                },
+                                                {
+                                                    "name": "h2",
+                                                    "attributes": {
+                                                        "class": "w3-wide"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "i",
+                                                            "attributes": {
+                                                                "class": "fa fa-suitcase w3-margin-right"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "value": "Tickets"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-container"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "p",
+                                                    "children": [
+                                                        {
+                                                            "name": "label",
+                                                            "children": [
+                                                                {
+                                                                    "name": "i",
+                                                                    "attributes": {
+                                                                        "class": "fa fa-shopping-cart"
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "value": "Tickets, $15 per person"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "input",
+                                                    "attributes": {
+                                                        "class": "w3-input w3-border",
+                                                        "type": "text",
+                                                        "placeholder": "How many?"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "p",
+                                                    "children": [
+                                                        {
+                                                            "name": "label",
+                                                            "children": [
+                                                                {
+                                                                    "name": "i",
+                                                                    "attributes": {
+                                                                        "class": "fa fa-user"
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "value": "Send To"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "input",
+                                                    "attributes": {
+                                                        "class": "w3-input w3-border",
+                                                        "type": "text",
+                                                        "placeholder": "Enter email"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "button",
+                                                    "attributes": {
+                                                        "class": "w3-button w3-block w3-teal w3-padding-16 w3-section w3-right"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "i",
+                                                            "attributes": {
+                                                                "class": "fa fa-check"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "value": "PAY"
+                                                },
+                                                {
+                                                    "name": "button",
+                                                    "attributes": {
+                                                        "class": "w3-button w3-red w3-section",
+                                                        "onclick": "document.getElementById('ticketModal').style.display='none'"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "i",
+                                                            "attributes": {
+                                                                "class": "fa fa-remove"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "value": "Close"
+                                                },
+                                                {
+                                                    "name": "p",
+                                                    "attributes": {
+                                                        "class": "w3-right"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "a",
+                                                            "attributes": {
+                                                                "href": "#",
+                                                                "class": "w3-text-blue"
+                                                            },
+                                                            "value": "help?"
+                                                        }
+                                                    ],
+                                                    "value": "Need"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "div",
+                            "attributes": {
+                                "class": "w3-container w3-content w3-padding-64",
+                                "style": "max-width:800px",
+                                "id": "contact"
+                            },
+                            "children": [
+                                {
+                                    "name": "h2",
+                                    "attributes": {
+                                        "class": "w3-wide w3-center"
+                                    },
+                                    "value": "CONTACT"
+                                },
+                                {
+                                    "name": "p",
+                                    "attributes": {
+                                        "class": "w3-opacity w3-center"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "i",
+                                            "value": "Fan? Drop a note!"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "div",
+                                    "attributes": {
+                                        "class": "w3-row w3-padding-32"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-col m6 w3-large w3-margin-bottom"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "i",
+                                                    "attributes": {
+                                                        "class": "fa fa-map-marker",
+                                                        "style": "width:30px"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "br"
+                                                },
+                                                {
+                                                    "name": "i",
+                                                    "attributes": {
+                                                        "class": "fa fa-phone",
+                                                        "style": "width:30px"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "br"
+                                                },
+                                                {
+                                                    "name": "i",
+                                                    "attributes": {
+                                                        "class": "fa fa-envelope",
+                                                        "style": "width:30px"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "br"
+                                                }
+                                            ],
+                                            "value": "Chicago, US\n         Phone: +00 151515\n         Email: mail@mail.com"
+                                        },
+                                        {
+                                            "name": "div",
+                                            "attributes": {
+                                                "class": "w3-col m6"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "form",
+                                                    "attributes": {
+                                                        "action": "/action_page.php",
+                                                        "target": "_blank"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "name": "div",
+                                                            "attributes": {
+                                                                "class": "w3-row-padding",
+                                                                "style": "margin:0 -16px 8px -16px"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "name": "div",
+                                                                    "attributes": {
+                                                                        "class": "w3-half"
+                                                                    },
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "input",
+                                                                            "attributes": {
+                                                                                "class": "w3-input w3-border",
+                                                                                "type": "text",
+                                                                                "placeholder": "Name",
+                                                                                "name": "Name"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "name": "div",
+                                                                    "attributes": {
+                                                                        "class": "w3-half"
+                                                                    },
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "input",
+                                                                            "attributes": {
+                                                                                "class": "w3-input w3-border",
+                                                                                "type": "text",
+                                                                                "placeholder": "Email",
+                                                                                "name": "Email"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "input",
+                                                            "attributes": {
+                                                                "class": "w3-input w3-border",
+                                                                "type": "text",
+                                                                "placeholder": "Message",
+                                                                "name": "Message"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "button",
+                                                            "attributes": {
+                                                                "class": "w3-button w3-black w3-section w3-right",
+                                                                "type": "submit"
+                                                            },
+                                                            "value": "SEND"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "img",
+                    "attributes": {
+                        "src": "/w3images/map.jpg",
+                        "class": "w3-image w3-greyscale-min",
+                        "style": "width:100%"
+                    }
+                },
+                {
+                    "name": "footer",
+                    "attributes": {
+                        "class": "w3-container w3-padding-64 w3-center w3-opacity w3-light-grey w3-xlarge"
+                    },
+                    "children": [
+                        {
+                            "name": "i",
+                            "attributes": {
+                                "class": "fa fa-facebook-official w3-hover-opacity"
+                            }
+                        },
+                        {
+                            "name": "i",
+                            "attributes": {
+                                "class": "fa fa-instagram w3-hover-opacity"
+                            }
+                        },
+                        {
+                            "name": "i",
+                            "attributes": {
+                                "class": "fa fa-snapchat w3-hover-opacity"
+                            }
+                        },
+                        {
+                            "name": "i",
+                            "attributes": {
+                                "class": "fa fa-pinterest-p w3-hover-opacity"
+                            }
+                        },
+                        {
+                            "name": "i",
+                            "attributes": {
+                                "class": "fa fa-twitter w3-hover-opacity"
+                            }
+                        },
+                        {
+                            "name": "i",
+                            "attributes": {
+                                "class": "fa fa-linkedin w3-hover-opacity"
+                            }
+                        },
+                        {
+                            "name": "p",
+                            "attributes": {
+                                "class": "w3-medium"
+                            },
+                            "children": [
+                                {
+                                    "name": "a",
+                                    "attributes": {
+                                        "href": "https://www.w3schools.com/w3css/default.asp",
+                                        "target": "_blank"
+                                    },
+                                    "value": "w3.css"
+                                }
+                            ],
+                            "value": "Powered by"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
