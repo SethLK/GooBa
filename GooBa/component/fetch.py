@@ -5,22 +5,23 @@
 }"""
 
 
-class fetch:
-    def __init__(self):
+class Fetch:
+    def __init__(self, url):
+        self.url = url
         pass
 
-    def get(self, url):
+    def get(self):
         pass
 
-    def post(self, url):
+    def post(self):
         pass
 
-    def put(self, url):
+    def put(self):
         pass
 
-    def patch(self, url):
+    def patch(self):
         pass
 
-    def delete(self, url):
+    def delete(self):
         pass
 

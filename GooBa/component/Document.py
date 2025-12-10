@@ -1,7 +1,7 @@
 import os
 
 from GooBa.hmr.hmr import javascript
-
+from GooBa.Extern.gooba import goooba
 
 class Document:
     def __init__(self):
@@ -52,7 +52,7 @@ class Document:
         
         </div>
         <script src="/page.js"></script>
-        <script src="/main.js"></script>
+  <script type="module" src="/main.js"></script>
         {external_js_str}
         <script src="/hmr.js"></script>
         
@@ -67,3 +67,4 @@ class Document:
 
         with open('./output/hmr.js', 'w') as file:
             file.write(javascript)
+

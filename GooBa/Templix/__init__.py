@@ -7,5 +7,5 @@
 
 # from Decorator import *
 
-from .packed import view, Component
+from .etc import view, component, function
 # from .mypypeg import *
