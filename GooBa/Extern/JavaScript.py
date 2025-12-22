@@ -1,3 +1,6 @@
+import inspect
+
+
 class CodeBlock:
     def __init__(self, code: str, filename: str = None):
         self.code = code
@@ -24,3 +27,179 @@ class CodeBlock:
 
     def __str__(self):
         return self.code
+
+
+def __js__(func):
+    return func
+
+"""
+export function Create<T>(initial: T): { 
+    get: () => T;
+    set: (value: T | ((prev: T) => T)) => void;
+} {
+    if (!current) {
+        throw new Error("Create() must be called inside a hooked component");
+    }
+
+    const hooks = current.hooks;
+    const idx = current.hookIndex++;
+
+    if (hooks[idx] === undefined) {
+        hooks[idx] = initial;
+    }
+
+    const get = () => hooks[idx] as T;
+
+    const set = (value: T | ((prev: T) => T)) => {
+        if (typeof value === "function") {
+            hooks[idx] = (value as (prev: T) => T)(hooks[idx]);
+        } else {
+            hooks[idx] = value;
+        }
+
+        triggerRender();
+    };
+
+
+    return { get, set };
+}
+
+"""
+
+
+
+# class State:
+#     def __init__(self, name, initial):
+#         self.name = name
+#         self.initial = initial
+#
+#     def set(self, fn):
+#         if callable(fn):
+#             source = inspect.getsource(fn).strip()
+#             print(source)
+#             start = source.find("lambda")
+#             end = source.find(")}", start)
+#
+#             source = source[start:end]
+#             # print(source)
+#             # # handle "count.set(lambda c: c + 1)"
+#             # source = source.split("=", 1)[-1].strip()
+#             # print(source)
+#             source = source.replace("lambda", "").replace(":", " =>")
+#             # print(source)
+#             # source = source.removeprefix("count.set(").removesuffix(")")
+#             # print(source)
+#
+#             return f"{self.name}.set({source})"
+#
+#         return f"{self.name}.set({fn})"
+#
+#     def get(self):
+#         return f"${{{self.name}.get()}}"
+#
+# def Create(initial):
+#     global _state_counter
+#     var = f"state{_state_counter}"
+#     _state_counter += 1
+#     return State(var, initial)
+
+
+_state_counter = 0
+_state_registry = []
+
+class Create:
+    def __init__(self, initial):
+        global _state_counter
+        self.id = _state_counter
+        self.initial = initial
+        self.name = f"state{_state_counter}"
+        _state_counter += 1
+        _state_registry.append(self)
+
+    def get(self):
+        return f"${{state{self.id}.get()}}"
+
+    def set(self, fn):
+        if callable(fn):
+            source = inspect.getsource(fn).strip()
+            print(source)
+            start = source.find("lambda")
+            end = source.find(")}", start)
+
+            source = source[start:end]
+            # print(source)
+            # # handle "count.set(lambda c: c + 1)"
+            # source = source.split("=", 1)[-1].strip()
+            # print(source)
+            source = source.replace("lambda", "").replace(":", " =>")
+            # print(source)
+            # source = source.removeprefix("count.set(").removesuffix(")")
+            # print(source)
+
+            return f"{self.name}.set({source})"
+
+        return f"{self.name}.set({fn})"
+
+def Component(func):
+    name = func.__name__[0].upper() + func.__name__[1:]
+
+    def wrapper():
+        root = func()
+
+        lines = [f"function {name}() {{"]
+
+        # find all global states used
+        # for i in range(_state_counter):
+        #     lines.append(f"  const state{i} = Create(0);")
+
+        for state in _state_registry:
+            lines.append(
+                f"  const state{state.id} = Create({state.initial});"
+            )
+
+        # return h(...)
+        lines.append("  return " + root.to_h(depth=2) + ";")
+
+
+        lines.append("}")
+
+        return "\n".join(lines)
+
+    return wrapper
+
+class JSFunctionCall:
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+
+    def emit(self):
+        args = ", ".join(map(str, self.args))
+        return f"{self.name}({args})"
+
+
+class JSFunction:
+    def __init__(self, name, py_fn):
+        self.name = name
+        self.py_fn = py_fn   # stored, NOT executed
+        self.body = None     # AST
+
+    def build(self):
+        # execute Python function ONLY to collect AST
+        self.body = self.py_fn()
+
+    def emit(self):
+        return f"""
+function {self.name}() {{
+  return {self.body};
+}}
+""".strip()
+
+    def __call__(self, *args):
+        # THIS IS THE KEY PART
+        return JSFunctionCall(self.name, args)
+
+def Function(py_fn):
+    js_fn = JSFunction(py_fn.__name__, py_fn)
+    js_fn.build()
+    return js_fn
+

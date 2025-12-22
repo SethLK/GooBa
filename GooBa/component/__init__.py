@@ -5,3 +5,4 @@ from .component import *
 from .style import CreateStyle
 from .CreateElement import CreateElement
 from .fetch import Fetch
+from .DataClass import CreateData

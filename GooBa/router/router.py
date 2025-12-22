@@ -21,7 +21,8 @@ class Router(object):
         )
 
     def render(self, route, content):
-        content = content.to_h()
+        if hasattr(content, "to_h"):
+            content = content.to_h()
         if ':' in route:
             param = re.findall(r":(\w+)", route)
             self.dynamic_routes.append((route, param, content))
@@ -32,16 +33,27 @@ class Router(object):
     def run(self, entry):
         static_routes_js = []
         for path, content in self.routes.items():
-            static_routes_js.append(f"""
-page('{path}', () => {{
-    render(() => {content});
-}});
-""")
+            if content.startswith("function"):
+                static_routes_js.append(f"""
+                page('{path}', () => {{
+                    render({content});
+                }});
+                """)
+            else:
+            # print(content)
+                static_routes_js.append(f"""
+                page('{path}', () => {{
+                    render(() => {content});
+                }});
+                """)
+
 
         static_routes_code = '\n'.join(static_routes_js)
+        # print(static_routes_code)
 
         dynamic_routes_js = []
         for route, param, content in self.dynamic_routes:
+            # print(self.dynamic_routes)
             dynamic_routes_js.append(f"""
             page('{route}', (ctx) => {{
                 render(() => {content});
@@ -49,6 +61,7 @@ page('{path}', () => {{
             """)
 
         dynamic_routes_code = '\n'.join(dynamic_routes_js)
+        # print(dynamic_routes_code)
         js_code = (f'''
 import {{ createApp, h, Create, withHooks }} from "/dist/gooba.js";
         function render(componentFn) {{

@@ -58,6 +58,21 @@ class TemplixHandler(ContentHandler):
         if self.element_stack:
             self.current_element["value"] += content
 
+def fix_html_void_tags(html: str) -> str:
+    voids = ["area", "base", "br", "col", "embed", "hr", "img",
+             "input", "link", "meta", "param", "source", "track", "wbr"]
+
+    for tag in voids:
+        # convert <hr> to <hr />
+        html = re.sub(fr"<{tag}\s*>", fr"<{tag} />", html)
+    return html
+
+def fix_tag_spaces(html: str) -> str:
+    # Replace "< p >" with "<p>"
+    html = re.sub(r"<\s*([A-Za-z0-9:_-]+)\s*>", r"<\1>", html)
+    html = re.sub(r"<\s*/\s*([A-Za-z0-9:_-]+)\s*>", r"</\1>", html)
+    return html
+
 
 def clean(element):
     """Trim value and remove empty keys to keep dicts small."""
@@ -172,7 +187,7 @@ def extract_return_block(code: str):
 
 def _gather_view_replacements(source_code: str):
     replacements = []
-    view_pattern = re.compile(r"@view\s+def\s+(\w+)\s*\(\s*\)\s*:", flags=re.M)
+    view_pattern = re.compile(r"\s*:", flags=re.M)
     for vm in view_pattern.finditer(source_code):
         search_start = vm.end()
         tail = source_code[search_start:]
@@ -186,7 +201,10 @@ def _gather_view_replacements(source_code: str):
         # preprocess -> parse -> convert
         html = remove_html_comments(block_text)
         html = preprocess_jsx_attributes(html)
+        html = fix_tag_spaces(html)
+        html = fix_html_void_tags(html)
         tree = parse_html_to_tree(html)
+        # print("Tree ->" + tree)
         rendered = converter(tree)
         # replacement = f"return (\n{rendered}\n)"
         replacement = f"(\n{rendered}\n)"
@@ -199,6 +217,7 @@ def transform_function(source_code: str) -> str:
     Full transform: collects replacements and then applies them from end -> start to avoid index shifting.
     """
     replacements = _gather_view_replacements(source_code)
+    # print(replacements)
     if not replacements:
         return source_code
 
@@ -217,7 +236,10 @@ def translate_file(templix_path: str, py_path: str) -> None:
     with open(templix_path, "r", encoding="utf-8") as fh:
         src = fh.read()
     try:
+
+        # print(src)
         out = transform_function(src)
+        # print(out)
     except Exception as e:
         sys.stderr.write(f"Failed to transform {templix_path}: {e}\n")
         raise
@@ -229,11 +251,11 @@ def translate_file(templix_path: str, py_path: str) -> None:
 # CLI
 # ---------------------------
 #
-# if __name__ == "__main__":
-#     if len(sys.argv) < 3:
-#         print("Usage: python Templix.py <source.templix> <out.py>")
-#         sys.exit(1)
-#     src = sys.argv[1]
-#     dst = sys.argv[2]
-#     translate_file(src, dst)
-#     print(f"Transformed {src} -> {dst}")
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: python Templix.py <source.templix> <out.py>")
+        sys.exit(1)
+    src = sys.argv[1]
+    dst = sys.argv[2]
+    translate_file(src, dst)
+    print(f"Transformed {src} -> {dst}")

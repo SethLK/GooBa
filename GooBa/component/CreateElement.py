@@ -139,8 +139,10 @@ class CreateElement:
 
         attrs_items = []
         for key, value in self.attributes.items():
-            if key.startswith("on"):
-                attrs_items.append(f"{key}: () => {value}")
+            if key.startswith("on:"):
+                event_name = key.split(":", 1)[1]
+                attrs_items.append(f'on: {{ {event_name}: () => {value} }}')
+                continue
 
             else:
                 attrs_items.append(f"{key}: \"{value}\"")
@@ -181,8 +183,8 @@ class CreateElement:
     #     if root_id:
     #         lines.append(f"document.getElementById('{root_id}').appendChild({var_name});")
     #     return "\n".join(lines)
-    def render_js(self, root_id=None):
-        lines, var_name = self.to_h()
-        if root_id:
-            lines.append(f"document.getElementById('{root_id}').appendChild({var_name});")
-        return "\n".join(lines)
+    # def render_js(self, root_id=None):
+    #     lines, var_name = self.to_h()
+    #     if root_id:
+    #         lines.append(f"document.getElementById('{root_id}').appendChild({var_name});")
+    #     return "\n".join(lines)
