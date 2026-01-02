@@ -5,7 +5,6 @@ from GooBa import Document, CreateElement, Router, CreateStyle, Fetch, Create, C
 doc = Document()
 router = Router()
 
-
 @Component
 @view
 def homePage():
@@ -25,39 +24,9 @@ def homePage():
                           CreateElement("p", {}, f"{req.get('title')}"),
                           CreateElement("button", { "on:click": f"{count.set('Hello')}"}, "+1")
   ))
-#
-# @Component
-# @view
-# def homePage():
-#     req = useRequest(
-#         url="https://jsonplaceholder.typicode.com/posts/1",
-#         method="GET",
-#
-#     )
-#
-#     print(req)
-#     count = Create(1)
-#
-#     return CreateElement(
-#         "div", {},
-#         CreateElement("h1", {}, "Home Page"),
-#         CreateElement("p", {}, count.get()),
-#         CreateElement("p", {}, req.get("title")),
-#         CreateElement("button", {
-#             "on:click": count.set("Hello")
-#         }, "+1")
-#     )
-
 
 fetch = Fetch("https://jsonplaceholder.org/posts/1")
 post_1 = fetch.get("name")
-
-# print(Body({
-#     "Name": "Seth",
-#     "Age": 12,
-# }))
-
-
 
 router.render('/', homePage())
 
