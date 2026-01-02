@@ -18,7 +18,6 @@ def homePage():
     )
     # req.to_js()
     count = Create(1)
-    count_2 = Create(1)
 
     return (CreateElement("div", {},
                           CreateElement("h1", {}, "Home Page"),

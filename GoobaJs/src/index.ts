@@ -94,10 +94,19 @@ function useRequest<T = unknown>(baseHeaders: HeadersInit = {}) {
   return { data, loading, error, request };
 }
 
+function useOnce(fn: () => void) {
+  const ran = Create(false);
+
+  if (!ran.get()) {
+    ran.set(true);
+    fn();
+  }
+}
+
 export { useRequest };
 
 
 export {
-    Create, h, mountDOM, hString, destroyDOM, hFragment, varState, varState as state, runWithHooks, withHooks
+    Create, h, mountDOM, hString, destroyDOM, hFragment, varState, varState as state, runWithHooks, withHooks, useOnce
 };
 export type { VNode };

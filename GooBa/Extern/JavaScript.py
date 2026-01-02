@@ -134,7 +134,7 @@ class Create:
         return f"const state{_state_counter} = Create({self.initial});"
 
     def get(self):
-        return f"${{state{self.id}.get()}}"
+        return f"${{{self.name}.get()}}"
 
     def set(self, fn):
         if callable(fn):
@@ -155,7 +155,6 @@ class Create:
 
 
 class useRequest:
-    _id = 0
 
     def __init__(
         self,
@@ -171,6 +170,12 @@ class useRequest:
         referrerPolicy=None,
         signal=None
     ):
+        global _current_context
+
+        ctx = _current_context
+        self.id = ctx.request_id
+        ctx.request_id += 1
+
         self.url = url
         self.method = method
         self.headers = headers or {}
@@ -182,12 +187,6 @@ class useRequest:
         self.referrer = referrer
         self.referrerPolicy = referrerPolicy
         self.signal = signal
-
-        global _current_context
-
-        ctx = _current_context
-        self.id = ctx.request_id
-        ctx.request_id += 1
 
         ctx.requests.append(self)
 
@@ -238,10 +237,13 @@ class useRequest:
     def emit(self):
         return f"""
   const fetch{self.id} = useRequest();
-  fetch{self.id}.request("{self.url}", {{
-    {self._options_js()}
+  useOnce(() => {{
+    fetch{self.id}.request("{self.url}", {{
+        {self._options_js()}
+    }});
   }});
-"""
+  
+""".rstrip()
 
     def to_js(self):
         return self.emit()
@@ -267,35 +269,38 @@ def Component(func):
 
         lines = [f"function {name}() {{"]
 
-        req_match = re.search(
-            r"(\w+)\s*=\s*useRequest\((.*?)\)\n",
-            string_py, re.S
-        )
-        if req_match:
-            req_body = req_match.group(2)
-            var = req_match.group(1)
+    #     req_match = re.search(
+    #         r"(\w+)\s*=\s*useRequest\((.*?)\)\n",
+    #         string_py, re.S
+    #     )
+    #     if req_match:
+    #         req_body = req_match.group(2)
+    #         var = req_match.group(1)
+    #
+    #         url = re.search(r'url\s*=\s*"([^"]+)"', req_body)
+    #         method = re.search(r'method\s*=\s*"([^"]+)"', req_body)
+    #         headers = re.search(r'headers\s*=\s*(\{.*?\})', req_body, re.S)
+    #
+    #         url = url.group(1) if url else ""
+    #         method = method.group(1) if method else "GET"
+    #         headers = headers.group(1) if headers else "{}"
+    #
+    #         the_request = f"""
+    # const fetch{var} = useRequest();
+    # fetch{var}.request("{url}",{{
+    #     method: "{method}",
+    #     headers: {headers}
+    # }});
+    # """.strip()
+    #         print(the_request)
+    #     # print(url)
+    #     # print(req_match.group(2))
+    #
+    #
+    #         lines.append(the_request)
 
-            url = re.search(r'url\s*=\s*"([^"]+)"', req_body)
-            method = re.search(r'method\s*=\s*"([^"]+)"', req_body)
-            headers = re.search(r'headers\s*=\s*(\{.*?\})', req_body, re.S)
-
-            url = url.group(1) if url else ""
-            method = method.group(1) if method else "GET"
-            headers = headers.group(1) if headers else "{}"
-
-            the_request = f"""
-    const fetch{var} = useRequest();
-    fetch{var}.request("{url}",{{
-        method: "{method}",
-        headers: {headers}
-    }});
-    """.strip()
-            print(the_request)
-        # print(url)
-        # print(req_match.group(2))
-
-
-            lines.append(the_request)
+        for req in ctx.requests:
+            lines.append(req.emit())
 
         # 2️⃣ state
         for state in ctx.states:
