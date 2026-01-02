@@ -30,6 +30,39 @@ function submit() {
     });
 }
 
+function useRequest() {
+  const data = Create(null);
+  const loading = Create(false);
+  const error = Create(null);
+
+  const request = async (url, options = {}) => {
+    loading.set(true);
+    error.set(null);
+
+    try {
+      const res = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...options
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const json = await res.json();
+      data.set(json);
+      return json;
+    } catch (err) {
+      error.set(err);
+      throw err;
+    } finally {
+      loading.set(false);
+    }
+  };
+
+  return { data, loading, error, request };
+}
+
 
 
 // --- Components ---
@@ -51,19 +84,32 @@ export function AppHome() {
   ]);
 }
 
-function useFetch(url) {
-  const data = Create(null);
-  const loading = Create(true);
-  const error = Create(null);
+// function useFetch(url) {
+//   const data = Create(null);
+//   const loading = Create(true);
+//   const error = Create(null);
 
-  fetch(url)
-    .then(r => r.json())
-    .then(json => data.set(json))
-    .catch(err => error.set(err))
-    .finally(() => loading.set(false));
+//   fetch(url)
+//     .then(r => r.json())
+//     .then(json => data.set(json))
+//     .catch(err => error.set(err))
+//     .finally(() => loading.set(false));
+
+//   return { data, loading, error };
+// }
+
+function useFetch(url) {
+  const { data, loading, error, request } = useRequest();
+  const started = Create(false);
+
+  if (!started.get()) {
+    started.set(true);
+    request(url);
+  }
 
   return { data, loading, error };
 }
+
 
 function Card(props) {
   return h("div", {}, [
@@ -76,26 +122,28 @@ function Card(props) {
 
 export function AppProduct() {
   const count = Create(0);
-  const data = Create(null);
-  const loading = Create(true);
-  const error = Create(null);
+  // const data = Create(null);
+  // const loading = Create(true);
+  // const error = Create(null);
 
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("https://dummyjson.com/products/1");
-      if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-      const result = await response.json();
-      data.set(result);
-    } catch (err) {
-      error.set(err);
-    } finally {
-      loading.set(false);
-    }
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await fetch("https://dummyjson.com/products/1");
+  //     if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+  //     const result = await response.json();
+  //     data.set(result);
+  //   } catch (err) {
+  //     error.set(err);
+  //   } finally {
+  //     loading.set(false);
+  //   }
+  // };
 
-  fetchData();
-  // const { data, loading, error } = useFetch("https://dummyjson.com/products/1");
+  // fetchData();
+
+  const { data, loading, error } = useFetch("https://dummyjson.com/products/2");
+
 
   return h("div", {}, [
     h("h1", {}, ["Product Page"]),
@@ -135,20 +183,7 @@ function render(componentFn) {
 
 // page("/", () => render(AppHome));      // ✔ pass function
 page('/', () => {
-  render(function HomePage() {
-    const state0 = Create(0);
-    return h("div", {}, [
-      h("h1", {}, [
-        `Home Page`
-      ]),
-      h("p", {}, [
-        `${state0.get()}`
-      ]),
-      h("button", { onclick: () => state0.set(c => c + 1) }, [
-        `+1`
-      ])
-    ]);
-  });
+  render(AppProduct);
 });
 
 page("/product", () => render(AppProduct));

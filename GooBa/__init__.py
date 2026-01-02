@@ -6,4 +6,4 @@ from .Templix import *
 
 # from .Rendering import *
 
-from .Extern import Create, Component, Function, CodeBlock
+from .Extern import Create, Component,  useRequest

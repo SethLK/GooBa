@@ -63,7 +63,7 @@ class Router(object):
         dynamic_routes_code = '\n'.join(dynamic_routes_js)
         # print(dynamic_routes_code)
         js_code = (f'''
-import {{ createApp, h, Create, withHooks }} from "/dist/gooba.js";
+import {{ createApp, h, Create, withHooks, useRequest }} from "/dist/gooba.js";
         function render(componentFn) {{
           createApp({{view: componentFn }}).mount(document.getElementById("{entry}"));
         }}

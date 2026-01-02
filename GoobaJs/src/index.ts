@@ -53,6 +53,50 @@ export function triggerRender() {
     if (scheduleRender) scheduleRender();
 }
 
+
+function useRequest<T = unknown>(baseHeaders: HeadersInit = {}) {
+  const data = Create<T | null>(null);
+  const loading = Create(false);
+  const error = Create<Error | null>(null);
+
+  const request = async (
+    url: string,
+    options: RequestInit = {}
+  ): Promise<T> => {
+    loading.set(true);
+    error.set(null);
+
+    try {
+      const res = await fetch(url, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          ...baseHeaders,
+          ...(options.headers ?? {})
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const json = (await res.json()) as T;
+      data.set(json);
+      return json;
+    } catch (err) {
+      error.set(err as Error);
+      throw err;
+    } finally {
+      loading.set(false);
+    }
+  };
+
+  return { data, loading, error, request };
+}
+
+export { useRequest };
+
+
 export {
     Create, h, mountDOM, hString, destroyDOM, hFragment, varState, varState as state, runWithHooks, withHooks
 };

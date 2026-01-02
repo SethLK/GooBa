@@ -1,4 +1,5 @@
 import inspect
+import re
 
 
 class CodeBlock:
@@ -66,8 +67,6 @@ export function Create<T>(initial: T): {
 
 """
 
-
-
 # class State:
 #     def __init__(self, name, initial):
 #         self.name = name
@@ -103,18 +102,36 @@ export function Create<T>(initial: T): {
 #     _state_counter += 1
 #     return State(var, initial)
 
+class ComponentContext:
+    def __init__(self):
+        self.states = []
+        self.requests = []
+        self.state_id = 0
+        self.request_id = 0
+
+
+_current_context = ComponentContext()
 
 _state_counter = 0
 _state_registry = []
+_request_counter = 0
+_request_registry = []
 
 class Create:
     def __init__(self, initial):
-        global _state_counter
-        self.id = _state_counter
+        global _current_context
+
+        ctx = _current_context
+        self.id = ctx.state_id
+        ctx.state_id += 1
+
         self.initial = initial
-        self.name = f"state{_state_counter}"
-        _state_counter += 1
-        _state_registry.append(self)
+        self.name = f"state{self.id}"
+
+        ctx.states.append(self)
+
+    def __str__(self):
+        return f"const state{_state_counter} = Create({self.initial});"
 
     def get(self):
         return f"${{state{self.id}.get()}}"
@@ -127,45 +144,210 @@ class Create:
             end = source.find(")}", start)
 
             source = source[start:end]
-            # print(source)
-            # # handle "count.set(lambda c: c + 1)"
-            # source = source.split("=", 1)[-1].strip()
-            # print(source)
             source = source.replace("lambda", "").replace(":", " =>")
-            # print(source)
-            # source = source.removeprefix("count.set(").removesuffix(")")
-            # print(source)
 
             return f"{self.name}.set({source})"
 
+        if type(fn) == str:
+            return f"{self.name}.set(`{fn}`)"
+
         return f"{self.name}.set({fn})"
+
+
+class useRequest:
+    _id = 0
+
+    def __init__(
+        self,
+        url="",
+        method="GET",
+        headers=None,
+        body=None,
+        mode=None,
+        credentials=None,
+        cache=None,
+        redirect=None,
+        referrer=None,
+        referrerPolicy=None,
+        signal=None
+    ):
+        self.url = url
+        self.method = method
+        self.headers = headers or {}
+        self.body = body
+        self.mode = mode
+        self.credentials = credentials
+        self.cache = cache
+        self.redirect = redirect
+        self.referrer = referrer
+        self.referrerPolicy = referrerPolicy
+        self.signal = signal
+
+        global _current_context
+
+        ctx = _current_context
+        self.id = ctx.request_id
+        ctx.request_id += 1
+
+        ctx.requests.append(self)
+
+    def _build_options(self):
+        options = {
+            "method": self.method
+        }
+
+        if self.headers:
+            options["headers"] = self.headers
+
+        if self.body and self.method not in ("GET", "HEAD"):
+            options["body"] = f"JSON.stringify({self.body})"
+
+        if self.mode:
+            options["mode"] = self.mode
+
+        if self.credentials:
+            options["credentials"] = self.credentials
+
+        if self.cache:
+            options["cache"] = self.cache
+
+        if self.redirect:
+            options["redirect"] = self.redirect
+
+        if self.referrer:
+            options["referrer"] = self.referrer
+
+        if self.referrerPolicy:
+            options["referrerPolicy"] = self.referrerPolicy
+
+        return options
+
+    def _options_js(self):
+        opts = self._build_options()
+        lines = []
+
+        for key, value in opts.items():
+            if isinstance(value, str) and not value.startswith("JSON.stringify"):
+                lines.append(f'{key}: "{value}"')
+            else:
+                lines.append(f"{key}: {value}")
+
+        return ",\n    ".join(lines)
+
+
+    def emit(self):
+        return f"""
+  const fetch{self.id} = useRequest();
+  fetch{self.id}.request("{self.url}", {{
+    {self._options_js()}
+  }});
+"""
+
+    def to_js(self):
+        return self.emit()
+
+    def __str__(self):
+        return self.emit()
+
+    def get(self, key):
+        return f"${{fetch{self.id}.data.get()?.{key}}}"
 
 def Component(func):
     name = func.__name__[0].upper() + func.__name__[1:]
 
     def wrapper():
+        global _current_context
+        _current_context = ComponentContext()
+
         root = func()
+        string_py = inspect.getsource(func).strip()
+
+        ctx = _current_context
+        _current_context = None
 
         lines = [f"function {name}() {{"]
 
-        # find all global states used
-        # for i in range(_state_counter):
-        #     lines.append(f"  const state{i} = Create(0);")
+        req_match = re.search(
+            r"(\w+)\s*=\s*useRequest\((.*?)\)\n",
+            string_py, re.S
+        )
+        if req_match:
+            req_body = req_match.group(2)
+            var = req_match.group(1)
 
-        for state in _state_registry:
+            url = re.search(r'url\s*=\s*"([^"]+)"', req_body)
+            method = re.search(r'method\s*=\s*"([^"]+)"', req_body)
+            headers = re.search(r'headers\s*=\s*(\{.*?\})', req_body, re.S)
+
+            url = url.group(1) if url else ""
+            method = method.group(1) if method else "GET"
+            headers = headers.group(1) if headers else "{}"
+
+            the_request = f"""
+    const fetch{var} = useRequest();
+    fetch{var}.request("{url}",{{
+        method: "{method}",
+        headers: {headers}
+    }});
+    """.strip()
+            print(the_request)
+        # print(url)
+        # print(req_match.group(2))
+
+
+            lines.append(the_request)
+
+        # 2️⃣ state
+        for state in ctx.states:
             lines.append(
-                f"  const state{state.id} = Create({state.initial});"
+                f"  const {state.name} = Create({state.initial});"
             )
 
-        # return h(...)
+        # 3️⃣ render
         lines.append("  return " + root.to_h(depth=2) + ";")
-
-
         lines.append("}")
 
         return "\n".join(lines)
 
     return wrapper
+
+# def Component(func):
+#     print(inspect.getsource(func).strip())
+#     name = func.__name__[0].upper() + func.__name__[1:]
+#
+#     def wrapper():
+#         global _state_registry, _request_registry
+#
+#         # 🔥 reset per component render
+#         _state_registry = []
+#         _request_registry = []
+#         Create._id = 0
+#         useRequest._id = 0
+#
+#         root = func()
+#         lines = [f"function {name}() {{"]
+#         #
+#         # print(_request_registry)
+#         #
+#         # print(_state_registry)
+#         print(_request_registry)
+#
+#         for req in _request_registry:
+#             lines.append(req.emit())
+#
+#         # lines.append(
+#         #     f"{globals()['useRequest']()}"
+#         # )
+#         for state in _state_registry:
+#             lines.append(
+#                 f"  const state{state.id} = Create({state.initial});"
+#             )
+#         # return h(...)
+#         lines.append("  return " + root.to_h(depth=2) + ";")
+#         lines.append("}")
+#         return "\n".join(lines)
+#     return wrapper
+
 
 class JSFunctionCall:
     def __init__(self, name, args):

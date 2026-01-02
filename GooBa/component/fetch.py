@@ -6,22 +6,23 @@
 
 
 class Fetch:
+    _id = 0
+
     def __init__(self, url):
         self.url = url
-        pass
+        self.id = Fetch._id
+        Fetch._id += 1
 
-    def get(self):
-        pass
+    def to_js_init(self):
+        return f"""
+const fetch{self.id} = useRequest();
+fetch{self.id}.request("{self.url}");
+"""
 
-    def post(self):
-        pass
+    def get(self, key):
+        return f"fetch{self.id}.data.get()?.{key}"
 
-    def put(self):
-        pass
-
-    def patch(self):
-        pass
-
-    def delete(self):
-        pass
-
+def Body(body):
+    return (
+        f"""JSON.stringify({body})"""
+    )
