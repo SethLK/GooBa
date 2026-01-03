@@ -15,15 +15,34 @@ def homePage():
             "Authorization": "Bearer TOKEN123"
         }
     )
-    # req.to_js()
+
     count = Create(1)
 
-    return (CreateElement("div", {},
-                          CreateElement("h1", {}, "Home Page"),
-                          CreateElement("p", {}, f"{count.get()}"),
-                          CreateElement("p", {}, f"{req.get('title')}"),
-                          CreateElement("button", { "on:click": f"{count.set('Hello')}"}, "+1")
-  ))
+    return CreateElement(
+        "div",
+        {},
+        CreateElement("h1", {}, "Home Page"),
+        CreateElement("p", {}, f"{count.get()}"),
+        CreateElement("p", {}, f"{req.get('title')}"),
+
+        # Python ternary (JS ?: equivalent)
+        CreateElement(
+            "p",
+            {},
+            f"Count is small: {count.get()}"
+        ) if (count.get() < 5) else CreateElement(
+            "p",
+            {},
+            "Count is large"
+        ),
+
+        CreateElement(
+            "button",
+            {"on:click": lambda _: count.set(lambda c: c + 1)},
+            "+1"
+        )
+    )
+
 
 fetch = Fetch("https://jsonplaceholder.org/posts/1")
 post_1 = fetch.get("name")
