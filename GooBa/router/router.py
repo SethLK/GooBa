@@ -47,7 +47,6 @@ class Router(object):
                 }});
                 """)
 
-
         static_routes_code = '\n'.join(static_routes_js)
         # print(static_routes_code)
 

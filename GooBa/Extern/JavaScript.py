@@ -139,7 +139,7 @@ class Create:
     def set(self, fn):
         if callable(fn):
             source = inspect.getsource(fn).strip()
-            print(source)
+            # print(source)
             start = source.find("lambda")
             end = source.find(")}", start)
 
@@ -269,36 +269,6 @@ def Component(func):
 
         lines = [f"function {name}() {{"]
 
-    #     req_match = re.search(
-    #         r"(\w+)\s*=\s*useRequest\((.*?)\)\n",
-    #         string_py, re.S
-    #     )
-    #     if req_match:
-    #         req_body = req_match.group(2)
-    #         var = req_match.group(1)
-    #
-    #         url = re.search(r'url\s*=\s*"([^"]+)"', req_body)
-    #         method = re.search(r'method\s*=\s*"([^"]+)"', req_body)
-    #         headers = re.search(r'headers\s*=\s*(\{.*?\})', req_body, re.S)
-    #
-    #         url = url.group(1) if url else ""
-    #         method = method.group(1) if method else "GET"
-    #         headers = headers.group(1) if headers else "{}"
-    #
-    #         the_request = f"""
-    # const fetch{var} = useRequest();
-    # fetch{var}.request("{url}",{{
-    #     method: "{method}",
-    #     headers: {headers}
-    # }});
-    # """.strip()
-    #         print(the_request)
-    #     # print(url)
-    #     # print(req_match.group(2))
-    #
-    #
-    #         lines.append(the_request)
-
         for req in ctx.requests:
             lines.append(req.emit())
 
@@ -315,43 +285,6 @@ def Component(func):
         return "\n".join(lines)
 
     return wrapper
-
-# def Component(func):
-#     print(inspect.getsource(func).strip())
-#     name = func.__name__[0].upper() + func.__name__[1:]
-#
-#     def wrapper():
-#         global _state_registry, _request_registry
-#
-#         # 🔥 reset per component render
-#         _state_registry = []
-#         _request_registry = []
-#         Create._id = 0
-#         useRequest._id = 0
-#
-#         root = func()
-#         lines = [f"function {name}() {{"]
-#         #
-#         # print(_request_registry)
-#         #
-#         # print(_state_registry)
-#         print(_request_registry)
-#
-#         for req in _request_registry:
-#             lines.append(req.emit())
-#
-#         # lines.append(
-#         #     f"{globals()['useRequest']()}"
-#         # )
-#         for state in _state_registry:
-#             lines.append(
-#                 f"  const state{state.id} = Create({state.initial});"
-#             )
-#         # return h(...)
-#         lines.append("  return " + root.to_h(depth=2) + ";")
-#         lines.append("}")
-#         return "\n".join(lines)
-#     return wrapper
 
 
 class JSFunctionCall:
@@ -449,3 +382,136 @@ def Function(py_fn):
 
         return lines, var_name
 '''
+
+
+# function h(tag, props = {}, children = []) {
+#   return {
+#     tag,
+#     props,
+#     children: mapTextNodes(withoutNulls(children)),
+#     type: DOM_TYPES.ELEMENT
+#   };
+# }
+
+# function mapTextNodes(children) {
+#   return children.map(
+#     (child) => typeof child === "string" ? hString(child) : child
+#   );
+# }
+
+# export function AppHome() {
+#   return h("div", {}, [
+#     h("h1", {}, ["Home Page"]),
+#     h("a", { href: "/product" }, ["Go to Product"])
+#   ]);
+# }
+
+"""
+import { createApp, h, Create } from "./dist/gooba.js";
+
+// --- Components ---
+export function AppHome() {
+  return h("div", {}, [
+    h("h1", {}, ["Home Page"]),
+    h("a", { href: "/product" }, ["Go to Product"])
+  ]);
+}
+
+export function NotFound() {
+  return h("h2", {}, ["404 Page Not Found"]);
+}
+
+
+// --- Routing / Mounting ---
+function render(component) {
+  createApp({ view: () => component }).mount(document.getElementById("root"));
+}
+
+// Define all routes BEFORE page.start()
+page("/", () => render(AppHome()));
+page("/product", () => render(AppProduct()));
+page("*", () => render(NotFound()));
+
+page.start();
+"""
+
+# def render_js(self, root_id=None):
+#     lines, var_name = self.to_js_dom()
+#     if root_id:
+#         lines.append(f"document.getElementById('{root_id}').appendChild({var_name});")
+#     return "\n".join(lines)
+# def render_js(self, root_id=None):
+#     lines, var_name = self.to_h()
+#     if root_id:
+#         lines.append(f"document.getElementById('{root_id}').appendChild({var_name});")
+#     return "\n".join(lines)
+
+
+#     req_match = re.search(
+#         r"(\w+)\s*=\s*useRequest\((.*?)\)\n",
+#         string_py, re.S
+#     )
+#     if req_match:
+#         req_body = req_match.group(2)
+#         var = req_match.group(1)
+#
+#         url = re.search(r'url\s*=\s*"([^"]+)"', req_body)
+#         method = re.search(r'method\s*=\s*"([^"]+)"', req_body)
+#         headers = re.search(r'headers\s*=\s*(\{.*?\})', req_body, re.S)
+#
+#         url = url.group(1) if url else ""
+#         method = method.group(1) if method else "GET"
+#         headers = headers.group(1) if headers else "{}"
+#
+#         the_request = f"""
+# const fetch{var} = useRequest();
+# fetch{var}.request("{url}",{{
+#     method: "{method}",
+#     headers: {headers}
+# }});
+# """.strip()
+#         print(the_request)
+#     # print(url)
+#     # print(req_match.group(2))
+#
+#
+#         lines.append(the_request)
+
+
+
+# def Component(func):
+#     print(inspect.getsource(func).strip())
+#     name = func.__name__[0].upper() + func.__name__[1:]
+#
+#     def wrapper():
+#         global _state_registry, _request_registry
+#
+#         # 🔥 reset per component render
+#         _state_registry = []
+#         _request_registry = []
+#         Create._id = 0
+#         useRequest._id = 0
+#
+#         root = func()
+#         lines = [f"function {name}() {{"]
+#         #
+#         # print(_request_registry)
+#         #
+#         # print(_state_registry)
+#         print(_request_registry)
+#
+#         for req in _request_registry:
+#             lines.append(req.emit())
+#
+#         # lines.append(
+#         #     f"{globals()['useRequest']()}"
+#         # )
+#         for state in _state_registry:
+#             lines.append(
+#                 f"  const state{state.id} = Create({state.initial});"
+#             )
+#         # return h(...)
+#         lines.append("  return " + root.to_h(depth=2) + ";")
+#         lines.append("}")
+#         return "\n".join(lines)
+#     return wrapper

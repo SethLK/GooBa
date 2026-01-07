@@ -181,21 +181,65 @@ function render(componentFn) {
   createApp({ view: componentFn }).mount(document.getElementById("root"));
 }
 
-function withConditions(){
+// function withConditions() {
+//   const isVisible = Create(true);
+//   const num = Create(0);
+//   return h("div", {}, [
+//     h("h1", {}, ["Conditional Rendering"]),
+
+//     isVisible.get() ? h("p", {}, ["This paragraph is visible"]) : null,
+
+//     h("button", {
+//       on: { click: () => isVisible.set(v => !v) }
+//     }, [isVisible.get() ? "Hide" : "Show"]),
+
+//     // num.get() < 5 ? 
+//     // h("p", {}, [`Number is less than 5: ${num.get()}`]) : 
+//     // h("p", {}, ["Number is 5 or more"]),
+//     ( if (num.get()) < 5 {
+//       return h("p", {}, [`Number is less than 5: ${num.get()}`])
+//     } else if (num.get() < 10) {
+//        return h("p", {}, ["Number is between 5 and 9"])
+//     } 
+//     else {
+//        return h("p", {}, ["Number is 5 or more"])
+//     } ),
+
+//     h("button", {
+//       on: { click: () => num.set(n => n + 1) }
+//     }, ["Increment Number"])
+//   ]);
+// }
+
+function withConditions() {
   const isVisible = Create(true);
   const num = Create(0);
-  return h("div", {}, [
-    h("h1", {}, ["Conditional Rendering"]),
-    isVisible.get() ? h("p", {}, ["This paragraph is visible"]) : null,
-    h("button", {
-      on: { click: () => isVisible.set(v => !v) }
-    }, [isVisible.get() ? "Hide" : "Show"]),
-    num.get() < 5 ? h("p", {}, [`Number is less than 5: ${num.get()}`]) : h("p", {}, ["Number is 5 or more"]),
-    h("button", {
-      on: { click: () => num.set(n => n + 1) }
-    }, ["Increment Number"])
+
+  return h( "div" , {}, [
+    h( "h1" , {}, [ "Conditional Rendering" ]),
+
+    isVisible.get() ?
+      h( "p" , {}, [ "This paragraph is visible" ]) :
+      null,
+
+    h( "button" , { on: { click: () => isVisible.set(v => !v) } }, [isVisible.get() ? 'Hide' : 'Show' ]),
+    h("p", {}, [`Current Number: ${num.get()}`]),
+
+    // Fixed: Use an IIFE for complex conditional logic
+    (() => {
+      if (num.get() < 5) {
+        return h( "p" , {}, [ `Number is less than 5: ${num.get()}` ]);
+      } else if (num.get() < 10) {
+        return h( "p" , {}, [ 'Number is between 5 and 9' ]);
+      } else {
+        return h( "p" , {}, [ 'Number is 10 or more' ]);
+      }
+    })(),
+
+    h( "button" , { on: { click: () => num.set(n => n + 1) } }, [ 'Increment Number' ])
   ]);
 }
+
 
 // page("/", () => render(AppHome));      // ✔ pass function
 page('/', () => {

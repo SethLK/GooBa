@@ -1,60 +1,38 @@
 import re
 
-# function h(tag, props = {}, children = []) {
-#   return {
-#     tag,
-#     props,
-#     children: mapTextNodes(withoutNulls(children)),
-#     type: DOM_TYPES.ELEMENT
-#   };
-# }
-
-# function mapTextNodes(children) {
-#   return children.map(
-#     (child) => typeof child === "string" ? hString(child) : child
-#   );
-# }
-
-# export function AppHome() {
-#   return h("div", {}, [
-#     h("h1", {}, ["Home Page"]),
-#     h("a", { href: "/product" }, ["Go to Product"])
-#   ]);
-# }
-
-"""
-import { createApp, h, Create } from "./dist/gooba.js";
-
-// --- Components ---
-export function AppHome() {
-  return h("div", {}, [
-    h("h1", {}, ["Home Page"]),
-    h("a", { href: "/product" }, ["Go to Product"])
-  ]);
-}
-
-export function NotFound() {
-  return h("h2", {}, ["404 Page Not Found"]);
-}
+class Node:
+    """Base class for all AST nodes"""
+    pass
 
 
-// --- Routing / Mounting ---
-function render(component) {
-  createApp({ view: () => component }).mount(document.getElementById("root"));
-}
+class JSNode(Node):
+    """Anything that outputs RAW JS"""
+    def to_h(self):
+        raise NotImplementedError
 
-// Define all routes BEFORE page.start()
-page("/", () => render(AppHome()));
-page("/product", () => render(AppProduct()));
-page("*", () => render(NotFound()));
+class G(JSNode):
+    def __init__(self, *branches):
+        self.branches = branches
+        self.type = "element"
 
-page.start();
-"""
+    def to_h(self):
+        lines = [b.to_js() for b in self.branches]
+        body = "\n".join(lines)
+
+        print(body)
+
+        return f"(function() {{\n{body}\n}})()".strip()
+
+    def __str__(self):
+        # just delegate to to_h
+        return self.to_h()
+
+
 
 class CreateElement:
-    """Pure DOM-like element builder (Python version of document.createElement)."""
 
-    _id_counter = 0  # global unique counter for all created elements
+    _id_counter = 0
+
 
     def __init__(self, tag, attributes=None, *children):
         self.tag = tag
@@ -62,11 +40,9 @@ class CreateElement:
         self.children = list(children)
         self.style = {}
         self._id = CreateElement._id_counter
+        self.type = "element"
         CreateElement._id_counter += 1
 
-    # -----------------
-    # DOM-like methods
-    # -----------------
     def appendChild(self, *children):
         self.children.extend(children)
         return self
@@ -95,9 +71,17 @@ class CreateElement:
         attr_js = "{ " + ", ".join(attrs_items) + " }" if attrs_items else "{}"
 
         lines = []
+        # for child in self.children:
+        #     if isinstance(child, G):
+        #         g_js = child.to_h()
+        #         lines.append(("    " * (depth + 1)) + g_js)
+        #     if isinstance(child, CreateElement):
+        #         lines.append(f"{child.to_h(depth + 1)}")
+        #     else:
+        #         lines.append(("    " * (depth + 1)) + f"`{child}`")
         for child in self.children:
-            if isinstance(child, CreateElement):
-                lines.append(child.to_h(depth + 1))
+            if hasattr(child, "to_h"):
+                lines.append(("    " * (depth + 1)) + child.to_h())
             else:
                 lines.append(("    " * (depth + 1)) + f"`{child}`")
 
@@ -122,14 +106,3 @@ class CreateElement:
 
     def __str__(self):
         return self.to_h()
-
-    # def render_js(self, root_id=None):
-    #     lines, var_name = self.to_js_dom()
-    #     if root_id:
-    #         lines.append(f"document.getElementById('{root_id}').appendChild({var_name});")
-    #     return "\n".join(lines)
-    # def render_js(self, root_id=None):
-    #     lines, var_name = self.to_h()
-    #     if root_id:
-    #         lines.append(f"document.getElementById('{root_id}').appendChild({var_name});")
-    #     return "\n".join(lines)
