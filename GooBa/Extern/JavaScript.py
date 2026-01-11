@@ -1,6 +1,8 @@
 import inspect
 import re
 
+from GooBa.Condition.Condition import Expr
+# from ..Condition.Condition import Expr
 
 class CodeBlock:
     def __init__(self, code: str, filename: str = None):
@@ -132,6 +134,12 @@ class Create:
 
     def __str__(self):
         return f"const state{_state_counter} = Create({self.initial});"
+
+    def value(self):
+        return Expr(f"{self.name}.get()")
+
+    def text(self):
+        return f"${{{self.name}.get()}}"
 
     def get(self):
         return f"${{{self.name}.get()}}"
