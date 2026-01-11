@@ -1,7 +1,7 @@
 import inspect
 
 from GooBa import Document, CreateElement, Router, CreateStyle, Fetch, Create, Component, view, \
-    Body, useRequest, GIf, GElse, G
+    Body, useRequest, GIf, GElse, G, GELIf
 
 doc = Document()
 router = Router()
@@ -31,7 +31,7 @@ def homePage():
                 count.value() < 5,
                 CreateElement("p", {}, "Number is less than 5")
             ),
-            GIf(
+            GELIf(
                 count.value() > 5,
                 CreateElement("p", {}, "Number is between 5 and 8")
             ),

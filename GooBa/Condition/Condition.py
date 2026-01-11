@@ -69,6 +69,18 @@ class GIf:
         return f"if ({self.cond}) return {self.value.to_h()};"
 
 
+class GELIf:
+    def __init__(self, cond, value):
+        if hasattr(cond, "to_js"):
+            self.cond = cond.to_js()
+        else:
+            raise TypeError("GIf condition must be an expression")
+        self.value = value
+
+    def to_js(self):
+        return f"else if ({self.cond}) return {self.value.to_h()};"
+
+
 class GElse:
     def __init__(self, value):
         self.value = value
