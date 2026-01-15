@@ -17,10 +17,10 @@ def homePage():
             {"name": "Eternal Flame", "age": 1000000}
         ]
     )
-    # req = useRequest(
-    #     url="http://localhost:8080/something.json",
-    #     method="GET",
-    # )
+    req = useRequest(
+        url="http://localhost:8080/something.json",
+        method="GET",
+    )
 
     count = Create(1)
     # print(req.value())
@@ -36,7 +36,7 @@ def homePage():
             "div",
             {},
             Loop(
-                          data.value(),
+                          req.value(),
                           lambda hero: Fragment(
                               CreateElement("h3", {}, f"{hero.get('name')}"),
                               CreateElement("p", {}, f"Age: {hero.get('age')}")
