@@ -26,7 +26,18 @@ class Expr:
     def __init__(self, code):
         self.code = code
 
+    def get(self, key):
+        # This turns hero.get('name') into item.name
+        return Expr(f"{self.code}.{key}")
+
     def __str__(self):
+        # When used in an f-string: f"{hero.get('name')}"
+        return f"${{{self.code}}}"
+
+    def to_h(self):
+        return self.code
+
+    def value(self):
         return self.code
 
     def to_js(self):

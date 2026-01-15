@@ -146,20 +146,47 @@ export function removeStyle(
   el.style[name] = ''
 }
 
+// export function setAttribute(
+//   el: HTMLElement,
+//   name: string,
+//   value: string | number | null | undefined
+// ): void {
+//   if (value == null) {
+//     removeAttribute(el, name)
+//   } else if (name.startsWith('data-')) {
+//     el.setAttribute(name, String(value))
+//   } else {
+//     // @ts-ignore: dynamic property assignment
+//     el[name] = value
+//   }
+// }
+
 export function setAttribute(
   el: HTMLElement,
   name: string,
   value: string | number | null | undefined
 ): void {
   if (value == null) {
-    removeAttribute(el, name)
-  } else if (name.startsWith('data-')) {
-    el.setAttribute(name, String(value))
+    removeAttribute(el, name);
+    return;
+  }
+
+  // 🔥 CRITICAL FIX
+  if (el instanceof HTMLInputElement && name === "value") {
+    if (el.value !== String(value)) {
+      el.value = String(value);
+    }
+    return;
+  }
+
+  if (name.startsWith("data-")) {
+    el.setAttribute(name, String(value));
   } else {
-    // @ts-ignore: dynamic property assignment
-    el[name] = value
+    // @ts-ignore
+    el[name] = value;
   }
 }
+
 
 export function removeAttribute(el: HTMLElement, name: string): void {
   // @ts-ignore: dynamic property assignment

@@ -200,3 +200,71 @@ count = Create(0)
 
 print(
 count.set(lambda c: c + 1))
+
+data = [
+  {
+    "name": "Molecule Man",
+    "age": 29,
+    "secretIdentity": "Dan Jukes",
+    "powers": [
+      "Radiation resistance",
+      "Turning tiny",
+      "Radiation blast"
+    ]
+  },
+  {
+    "name": "Madame Uppercut",
+    "age": 39,
+    "secretIdentity": "Jane Wilson",
+    "powers": [
+      "Million tonne punch",
+      "Damage resistance",
+      "Superhuman reflexes"
+    ]
+  },
+  {
+    "name": "Eternal Flame",
+    "age": 1000000,
+    "secretIdentity": "Unknown",
+    "powers": [
+      "Immortality",
+      "Heat Immunity",
+      "Inferno"
+    ]
+  }
+]
+
+"""
+[
+  {
+    "name": "Molecule Man",
+    "age": 29,
+    "secretIdentity": "Dan Jukes",
+    "powers": [
+      "Radiation resistance",
+      "Turning tiny",
+      "Radiation blast"
+    ]
+  },
+  {
+    "name": "Madame Uppercut",
+    "age": 39,
+    "secretIdentity": "Jane Wilson",
+    "powers": [
+      "Million tonne punch",
+      "Damage resistance",
+      "Superhuman reflexes"
+    ]
+  },
+  {
+    "name": "Eternal Flame",
+    "age": 1000000,
+    "secretIdentity": "Unknown",
+    "powers": [
+      "Immortality",
+      "Heat Immunity",
+      "Inferno"
+    ]
+  }
+]
+"""

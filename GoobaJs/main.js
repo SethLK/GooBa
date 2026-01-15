@@ -240,11 +240,27 @@ function withConditions() {
   ]);
 }
 
+function withLoops() {
+  const items = Create([
+            {"name": "Molecule Man", "age": 29},
+            {"name": "Madame Uppercut", "age": 39},
+            {"name": "Eternal Flame", "age": 1000000}
+        ]);
+  const newItem = Create('');
+  return h("div", {}, [
+    h("h1", {}, ["List Rendering"]),
+    
+    h("ul", {}, items.get().map(item => 
+      h("li", {}, [`${item.name} (Age: ${item.age})`])
+    )),
+
+  ]);
+}
 
 // page("/", () => render(AppHome));      // ✔ pass function
 page('/', () => {
   // render(AppProduct);
-  render(withConditions);
+  render(withLoops);
 });
 
 page("/product", () => render(AppProduct));

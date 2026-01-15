@@ -35,74 +35,6 @@ class CodeBlock:
 def __js__(func):
     return func
 
-"""
-export function Create<T>(initial: T): { 
-    get: () => T;
-    set: (value: T | ((prev: T) => T)) => void;
-} {
-    if (!current) {
-        throw new Error("Create() must be called inside a hooked component");
-    }
-
-    const hooks = current.hooks;
-    const idx = current.hookIndex++;
-
-    if (hooks[idx] === undefined) {
-        hooks[idx] = initial;
-    }
-
-    const get = () => hooks[idx] as T;
-
-    const set = (value: T | ((prev: T) => T)) => {
-        if (typeof value === "function") {
-            hooks[idx] = (value as (prev: T) => T)(hooks[idx]);
-        } else {
-            hooks[idx] = value;
-        }
-
-        triggerRender();
-    };
-
-
-    return { get, set };
-}
-
-"""
-
-# class State:
-#     def __init__(self, name, initial):
-#         self.name = name
-#         self.initial = initial
-#
-#     def set(self, fn):
-#         if callable(fn):
-#             source = inspect.getsource(fn).strip()
-#             print(source)
-#             start = source.find("lambda")
-#             end = source.find(")}", start)
-#
-#             source = source[start:end]
-#             # print(source)
-#             # # handle "count.set(lambda c: c + 1)"
-#             # source = source.split("=", 1)[-1].strip()
-#             # print(source)
-#             source = source.replace("lambda", "").replace(":", " =>")
-#             # print(source)
-#             # source = source.removeprefix("count.set(").removesuffix(")")
-#             # print(source)
-#
-#             return f"{self.name}.set({source})"
-#
-#         return f"{self.name}.set({fn})"
-#
-#     def get(self):
-#         return f"${{{self.name}.get()}}"
-#
-# def Create(initial):
-#     global _state_counter
-#     var = f"state{_state_counter}"
-#     _state_counter += 1
-#     return State(var, initial)
 
 class ComponentContext:
     def __init__(self):
@@ -261,6 +193,9 @@ class useRequest:
 
     def get(self, key):
         return f"${{fetch{self.id}.data.get()?.{key}}}"
+
+    def value(self):
+        return f"fetch{self.id}.data.get()"
 
 def Component(func):
     name = func.__name__[0].upper() + func.__name__[1:]
@@ -523,3 +458,73 @@ page.start();
 #         lines.append("}")
 #         return "\n".join(lines)
 #     return wrapper
+
+
+"""
+export function Create<T>(initial: T): { 
+    get: () => T;
+    set: (value: T | ((prev: T) => T)) => void;
+} {
+    if (!current) {
+        throw new Error("Create() must be called inside a hooked component");
+    }
+
+    const hooks = current.hooks;
+    const idx = current.hookIndex++;
+
+    if (hooks[idx] === undefined) {
+        hooks[idx] = initial;
+    }
+
+    const get = () => hooks[idx] as T;
+
+    const set = (value: T | ((prev: T) => T)) => {
+        if (typeof value === "function") {
+            hooks[idx] = (value as (prev: T) => T)(hooks[idx]);
+        } else {
+            hooks[idx] = value;
+        }
+
+        triggerRender();
+    };
+
+
+    return { get, set };
+}
+
+"""
+
+# class State:
+#     def __init__(self, name, initial):
+#         self.name = name
+#         self.initial = initial
+#
+#     def set(self, fn):
+#         if callable(fn):
+#             source = inspect.getsource(fn).strip()
+#             print(source)
+#             start = source.find("lambda")
+#             end = source.find(")}", start)
+#
+#             source = source[start:end]
+#             # print(source)
+#             # # handle "count.set(lambda c: c + 1)"
+#             # source = source.split("=", 1)[-1].strip()
+#             # print(source)
+#             source = source.replace("lambda", "").replace(":", " =>")
+#             # print(source)
+#             # source = source.removeprefix("count.set(").removesuffix(")")
+#             # print(source)
+#
+#             return f"{self.name}.set({source})"
+#
+#         return f"{self.name}.set({fn})"
+#
+#     def get(self):
+#         return f"${{{self.name}.get()}}"
+#
+# def Create(initial):
+#     global _state_counter
+#     var = f"state{_state_counter}"
+#     _state_counter += 1
+#     return State(var, initial)
