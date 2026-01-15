@@ -71,14 +71,6 @@ class CreateElement:
         attr_js = "{ " + ", ".join(attrs_items) + " }" if attrs_items else "{}"
 
         lines = []
-        # for child in self.children:
-        #     if isinstance(child, G):
-        #         g_js = child.to_h()
-        #         lines.append(("    " * (depth + 1)) + g_js)
-        #     if isinstance(child, CreateElement):
-        #         lines.append(f"{child.to_h(depth + 1)}")
-        #     else:
-        #         lines.append(("    " * (depth + 1)) + f"`{child}`")
         for child in self.children:
             if hasattr(child, "to_h"):
                 lines.append(("    " * (depth + 1)) + child.to_h())
