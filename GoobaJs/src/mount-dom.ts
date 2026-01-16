@@ -171,14 +171,6 @@ export function setAttribute(
     return;
   }
 
-  // 🔥 CRITICAL FIX
-  if (el instanceof HTMLInputElement && name === "value") {
-    if (el.value !== String(value)) {
-      el.value = String(value);
-    }
-    return;
-  }
-
   if (name.startsWith("data-")) {
     el.setAttribute(name, String(value));
   } else {

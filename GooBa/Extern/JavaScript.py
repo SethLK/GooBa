@@ -68,7 +68,7 @@ class Create:
         return f"const state{_state_counter} = Create({self.initial});"
 
     def value(self):
-        return Expr(f"{self.name}.get()")
+        return f"{self.name}.get()"
 
     def text(self):
         return f"${{{self.name}.get()}}"
@@ -183,7 +183,7 @@ class useRequest:
     }});
   }});
   
-""".rstrip()
+""".strip()
 
     def to_js(self):
         return self.emit()
@@ -265,3 +265,11 @@ def Function(py_fn):
     js_fn = JSFunction(py_fn.__name__, py_fn)
     js_fn.build()
     return js_fn
+
+class EventExpr:
+    def __init__(self, args, body):
+        self.args = args
+        self.body = body
+
+    def to_js(self):
+        return f"({self.args}) => {self.body}"

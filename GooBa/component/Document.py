@@ -52,7 +52,7 @@ class Document:
         
         </div>
         <script src="/page.js"></script>
-  <script type="module" src="/main.js"></script>
+        <script type="module" src="/main.js"></script>
         {external_js_str}
         <script src="/hmr.js"></script>
         

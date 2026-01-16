@@ -1,3 +1,4 @@
+
 import { createApp, h, Create, withHooks } from "./dist/gooba.js";
 
 const postData = {
@@ -246,6 +247,8 @@ function withLoops() {
             {"name": "Madame Uppercut", "age": 39},
             {"name": "Eternal Flame", "age": 1000000}
         ]);
+
+        
   const newItem = Create('');
   return h("div", {}, [
     h("h1", {}, ["List Rendering"]),
@@ -253,7 +256,23 @@ function withLoops() {
     h("ul", {}, items.get().map(item => 
       h("li", {}, [`${item.name} (Age: ${item.age})`])
     )),
-
+    h("input", { 
+      type: "text", 
+      placeholder: "New item name", 
+      value: newItem.get(),
+      on: { 
+        input: (e) => newItem.set(e.target.value) 
+      },
+    }),
+    h("button", { 
+      on: { click: () => {
+        if (newItem.get().trim() !== '') {
+          items.set([...items.get(), { name: newItem.get(), age: 0 }]);
+          newItem.set('');
+        }
+      } }
+    }, ["Add Item"]),
+    
   ]);
 }
 

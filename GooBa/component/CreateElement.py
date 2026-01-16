@@ -1,3 +1,4 @@
+import inspect
 import re
 
 class Node:
@@ -60,13 +61,31 @@ class CreateElement:
 
         attrs_items = []
         for key, value in self.attributes.items():
+            # print(key, value, type(value))
+
             if key.startswith("on:"):
                 event_name = key.split(":", 1)[1]
-                attrs_items.append(f'on: {{ {event_name}: () => {value} }}')
+                if event_name == "input":
+                    value = inspect.getsource(value).strip()
+                    source = value.split(":").copy()
+                    print(source)
+                    attrs_items.append(value)
+                else:
+                    attrs_items.append(f'on: {{ {event_name}: () => {value} }}')
+                    continue
+
+            if value.endswith("()"):
+                attrs_items.append(f'value: {value}')
                 continue
 
             else:
                 attrs_items.append(f"{key}: \"{value}\"")
+                continue
+
+
+
+
+
 
         attr_js = "{ " + ", ".join(attrs_items) + " }" if attrs_items else "{}"
 
