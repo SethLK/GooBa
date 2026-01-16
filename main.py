@@ -65,6 +65,7 @@ def homePage():
                           "placeholder": "New item name",
                           "value": newItem.value(),
                           # "on:input": newItem.set(),
+                          #f"(e) => {newItem.js_name}.set(e.target.value)"
                           "on:input": lambda e: newItem.set(e.target.value)
 
                       }
