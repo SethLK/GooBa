@@ -7,8 +7,6 @@ setup(
     include_package_data=True,
     install_requires=[
         'watchdog',
-        # 'pyPEG2',
-        # 'pypeg',
     ],
     entry_points={
         'console_scripts': [

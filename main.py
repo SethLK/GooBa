@@ -2,6 +2,7 @@ import inspect
 
 from GooBa import Document, CreateElement, Router, CreateStyle, Fetch, Create, Component, view, \
     Body, useRequest, GIf, GElse, G, GELIf, Loop, Fragment
+from GooBa.Extern import Event, event
 
 doc = Document()
 router = Router()
@@ -25,6 +26,7 @@ def homePage():
     ])
 
     newItem = Create("")
+    age = Create(0)
 
     req = useRequest(
         url="http://localhost:8080/something.json",
@@ -33,6 +35,8 @@ def homePage():
 
     count = Create(1)
     # print(req.value())
+    # lc = lambda e: newItem.set(e.target.value)
+    # print(lc(''))
 
     return CreateElement(
         "div",
@@ -64,15 +68,12 @@ def homePage():
                           "type": "text",
                           "placeholder": "New item name",
                           "value": newItem.value(),
-                          # "on:input": newItem.set(),
-                          #f"(e) => {newItem.js_name}.set(e.target.value)"
-                          "on:input": lambda e: newItem.set(e.target.value)
-
+                          "on:input": newItem.set(event.target.value)
                       }
                       ),
         CreateElement("button", {
             "on:click": items.set(
-                f"[...{items.value()}, {{ name: {newItem.value()}, age: 0 }}]"
+                f"[...{items.value()}, {{ name: {newItem.value()}, age: {age.value()} }}]"
             )
         }, "Add Item"),
 
@@ -81,7 +82,7 @@ def homePage():
             "div",
             {},
             Loop(
-                          req.value(),
+                          items.value(),
                           lambda hero: Fragment(
                               CreateElement("h3", {}, f"{hero.get('name')}"),
                               CreateElement("p", {}, f"Age: {hero.get('age')}")

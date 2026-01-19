@@ -1,292 +1,59 @@
 
-import { createApp, h, Create, withHooks } from "./dist/gooba.js";
-
-const postData = {
-  title: 'My New Post',
-  body: 'This is the content of my new post.',
-  userId: 1,
-};
-
-function submit() {
-
-  fetch('https://jsonplaceholder.typicode.com/posts', {
-    method: 'POST', // Specify the method
-    headers: {
-      'Content-Type': 'application/json', // Indicate the body format
-    },
-    body: JSON.stringify(postData), // Convert the JavaScript object to a JSON string
-  })
-    .then(response => {
-      // Check if the request was successful (status code 200-299)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json(); // Parse the JSON response body
-    })
-    .then(data => {
-      console.log('Success:', data); // Log the response data from the server
-    })
-    .catch((error) => {
-      console.error('Error:', error); // Handle any errors during the fetch operation
-    });
-}
-
-function useRequest() {
-  const data = Create(null);
-  const loading = Create(false);
-  const error = Create(null);
-
-  const request = async (url, options = {}) => {
-    loading.set(true);
-    error.set(null);
-
-    try {
-      const res = await fetch(url, {
-        headers: { "Content-Type": "application/json" },
-        ...options
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-
-      const json = await res.json();
-      data.set(json);
-      return json;
-    } catch (err) {
-      error.set(err);
-      throw err;
-    } finally {
-      loading.set(false);
-    }
-  };
-
-  return { data, loading, error, request };
-}
-
-
-
-// --- Components ---
-export function AppHome() {
-  const count = Create(0);
-  return h("div", {}, [
-    h("h1", {}, ["Home Page"]),
-    h("button", { on: { click: () => count.set(c => c + 1) } }, ["+1"]),
-    h("p", {}, [`Count: ${count.get()}`]),
-    h("button", {
-      on: {
-        click: () => submit()
-      }
-    }, ["Submit"]),
-    h("a", { href: "/product" }, ["Go to Product"]),
-    h("a", { href: "/param/123" }, ["Go to Param with ID 123"]),
-    h("a", { href: "/param/456" }, ["Go to Param with ID 456"]),
-    h("a", { href: "/not-found" }, ["Go to Not Found"])
-  ]);
-}
-
-// function useFetch(url) {
-//   const data = Create(null);
-//   const loading = Create(true);
-//   const error = Create(null);
-
-//   fetch(url)
-//     .then(r => r.json())
-//     .then(json => data.set(json))
-//     .catch(err => error.set(err))
-//     .finally(() => loading.set(false));
-
-//   return { data, loading, error };
-// }
-
-function useFetch(url) {
-  const { data, loading, error, request } = useRequest();
-  const started = Create(false);
-
-  if (!started.get()) {
-    started.set(true);
-    request(url);
-  }
-
-  return { data, loading, error };
-}
-
-
-function Card(props) {
-  return h("div", {}, [
-    h("h1", {}, [`${props.title}`]),
-    h("p", {}, [`Param ID: ${props.id}`]),
-    h("p", {}, [`Param ID: ${props.description}`]),
-  ]);
-}
-
-
-export function AppProduct() {
-  const count = Create(0);
-  // const data = Create(null);
-  // const loading = Create(true);
-  // const error = Create(null);
-
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch("https://dummyjson.com/products/1");
-  //     if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-  //     const result = await response.json();
-  //     data.set(result);
-  //   } catch (err) {
-  //     error.set(err);
-  //   } finally {
-  //     loading.set(false);
-  //   }
-  // };
-
-  // fetchData();
-
-  const { data, loading, error } = useFetch("https://dummyjson.com/products/2");
-
-
-  return h("div", {}, [
-    h("h1", {}, ["Product Page"]),
-    h("button", { on: { click: () => count.set(c => c + 1) } }, ["+1"]),
-    h("p", {}, [
-      loading.get()
-        ? "Loading..."
-        : error.get()
-          ? `Error: ${error.get().message}`
-          : Card({
-            title: data.get().title,
-            id: data.get().id,
-            description: data.get().description
-          })
-    ]),
-    h("p", {}, [`Count: ${count.get()}`]),
-    h("a", { href: "/" }, ["Back Home"])
-  ]);
-}
-
-export const NotFound = withHooks(function NotFound() {
-  return h("h2", {}, ["404 Page Not Found"]);
-});
-
-export function Param(props) {
-  return h("div", {}, [
-    h("h1", {}, ["Param Page"]),
-    h("p", {}, [`Param ID: ${props.id}`]),
-    h("a", { href: "/" }, ["Back Home"])
-  ]);
-};
-
-
+import { createApp, h, Create, withHooks, useRequest, useOnce, hFragment } from "/dist/gooba.js";
 function render(componentFn) {
   createApp({ view: componentFn }).mount(document.getElementById("root"));
 }
 
-// function withConditions() {
-//   const isVisible = Create(true);
-//   const num = Create(0);
-//   return h("div", {}, [
-//     h("h1", {}, ["Conditional Rendering"]),
 
-//     isVisible.get() ? h("p", {}, ["This paragraph is visible"]) : null,
+// Static routes
 
-//     h("button", {
-//       on: { click: () => isVisible.set(v => !v) }
-//     }, [isVisible.get() ? "Hide" : "Show"]),
-
-//     // num.get() < 5 ? 
-//     // h("p", {}, [`Number is less than 5: ${num.get()}`]) : 
-//     // h("p", {}, ["Number is 5 or more"]),
-//     ( if (num.get()) < 5 {
-//       return h("p", {}, [`Number is less than 5: ${num.get()}`])
-//     } else if (num.get() < 10) {
-//        return h("p", {}, ["Number is between 5 and 9"])
-//     } 
-//     else {
-//        return h("p", {}, ["Number is 5 or more"])
-//     } ),
-
-//     h("button", {
-//       on: { click: () => num.set(n => n + 1) }
-//     }, ["Increment Number"])
-//   ]);
-// }
-
-function withConditions() {
-  const isVisible = Create(true);
-  const num = Create(0);
-
-  return h( "div" , {}, [
-    h( "h1" , {}, [ "Conditional Rendering" ]),
-
-    isVisible.get() ?
-      h( "p" , {}, [ "This paragraph is visible" ]) :
-      null,
-
-    h( "button" , { on: { click: () => isVisible.set(v => !v) } }, [isVisible.get() ? 'Hide' : 'Show' ]),
-    h("p", {}, [`Current Number: ${num.get()}`]),
-
-    // Fixed: Use an IIFE for complex conditional logic
-    (() => {
-      if (num.get() < 5) {
-        return h( "p" , {}, [ `Number is less than 5: ${num.get()}` ]);
-      } else if (num.get() < 10) {
-        return h( "p" , {}, [ 'Number is between 5 and 9' ]);
-      } else {
-        return h( "p" , {}, [ 'Number is 10 or more' ]);
-      }
-    })(),
-
-    h( "button" , { on: { click: () => num.set(n => n + 1) } }, [ 'Increment Number' ])
-  ]);
-}
-
-function withLoops() {
-  const items = Create([
-            {"name": "Molecule Man", "age": 29},
-            {"name": "Madame Uppercut", "age": 39},
-            {"name": "Eternal Flame", "age": 1000000}
-        ]);
-
-        
-  const newItem = Create('');
-  return h("div", {}, [
-    h("h1", {}, ["List Rendering"]),
-    
-    h("ul", {}, items.get().map(item => 
-      h("li", {}, [`${item.name} (Age: ${item.age})`])
-    )),
-    h("input", { 
-      type: "text", 
-      placeholder: "New item name", 
-      value: newItem.get(),
-      on: { 
-        input: (e) => newItem.set(e.target.value) 
-      },
-    }),
-    h("button", { 
-      on: { click: () => {
-        if (newItem.get().trim() !== '') {
-          items.set([...items.get(), { name: newItem.get(), age: 0 }]);
-          newItem.set('');
-        }
-      } }
-    }, ["Add Item"]),
-    
-  ]);
-}
-
-// page("/", () => render(AppHome));      // ✔ pass function
 page('/', () => {
-  // render(AppProduct);
-  render(withLoops);
+  render(function HomePage() {
+    const fetch0 = useRequest();
+    useOnce(() => {
+      fetch0.request("http://localhost:8080/something.json", {
+        method: "GET"
+      });
+    });
+    const state0 = Create([{ 'name': 'Molecule Man', 'age': 29 }, { 'name': 'Madame Uppercut', 'age': 39 }, { 'name': 'Eternal Flame', 'age': 1000000 }]);
+    const state1 = Create([{ 'name': 'Molecule Man', 'age': 29 }, { 'name': 'Madame Uppercut', 'age': 39 }, { 'name': 'Eternal Flame', 'age': 1000000 }]);
+    const state2 = Create();
+    const state3 = Create(1);
+    return h("div", {}, [
+      h("h1", {}, [
+        `Home Page`
+      ]),
+      h("p", {}, [
+        `${state3.get()}`
+      ]),
+      h("input", 
+        { type: "text", 
+          placeholder: "New item name", 
+          value: state2.get(), on: { input: (e) => newItem.set(e.target.value) }}),
+      h("button", { on: { click: () => state1.set(`[...state1.get(), { name: state2.get(), age: 0 }]`) } }, [
+        `Add Item`
+      ]),
+      h("div", {}, [
+        ...fetch0.data.get()?.map(item => hFragment([h("h3", {}, [
+          `${item.name}`
+        ]), h("p", {}, [
+          `Age: ${item.age}`
+        ])])) ?? []
+      ]),
+      h("button", { on: { click: () => state3.set(c => c + 1) } }, [
+        `+1`
+      ])
+    ]);
+  });
 });
 
-page("/product", () => render(AppProduct));
-page("/param/:id", (ctx) => render(() => Param({ id: ctx.params.id })));
-// page("/cond")
 
-page("*", () => render(NotFound));
+// Dynamic routes
 
+
+// 404 handler
+page('*', () => {
+  render('<h2>404 Page Not Found</h2>');
+});
 
 page.start();

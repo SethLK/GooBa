@@ -1,6 +1,9 @@
 import inspect
 import re
 
+from GooBa.Extern import JSExpr, EventHandler, EventTargetValue
+
+
 class Node:
     """Base class for all AST nodes"""
     pass
@@ -65,11 +68,30 @@ class CreateElement:
 
             if key.startswith("on:"):
                 event_name = key.split(":", 1)[1]
+                # print(value)
                 if event_name == "input":
-                    value = inspect.getsource(value).strip()
-                    source = value.split(":").copy()
-                    print(source)
-                    attrs_items.append(value)
+                    #
+                    print(value)
+                    source = ""
+                    if "e.target.value" in value:
+                        source = f"on: {{ {event_name}: (e) => {value}}}"
+                    # attrs_items.append(value)
+                    # value_str = inspect.getsource(value).strip()
+                    # print(value_str)
+                    #
+                    # source = value_str.replace(":", "").split(" ")[2:]
+                    # code = "" + source[1]
+                    #
+                    # print(code)
+                    # param = code.replace("newItem.set(", "").replace(")", "")
+                    # print(param)
+                    # print(source)
+                    # source = f"on: {{ {event_name}: ({source[0]}) => {value()}}}"
+                    # print(source)
+                    attrs_items.append(source)
+
+                    continue
+
                 else:
                     attrs_items.append(f'on: {{ {event_name}: () => {value} }}')
                     continue
@@ -82,11 +104,6 @@ class CreateElement:
                 attrs_items.append(f"{key}: \"{value}\"")
                 continue
 
-
-
-
-
-
         attr_js = "{ " + ", ".join(attrs_items) + " }" if attrs_items else "{}"
 
         lines = []
@@ -96,11 +113,9 @@ class CreateElement:
             else:
                 lines.append(("    " * (depth + 1)) + f"`{child}`")
 
-        if lines:
-            # children_block = "[\n" + ",\n".join(lines) + "\n" + indent + "]"
-            children_block = f"[\n{',\n'.join(lines)}\n{indent}]"
-        else:
-            children_block = "[]"
+
+        # children_block = "[\n" + ",\n".join(lines) + "\n" + indent + "]"
+        children_block = f"[\n{',\n'.join(lines)}\n{indent}]" if lines else ""
 
         return f'{indent}h("{self.tag}", {attr_js}, {children_block})'
 

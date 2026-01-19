@@ -4,6 +4,7 @@ import re
 from GooBa.Condition.Condition import Expr
 # from ..Condition.Condition import Expr
 
+
 class CodeBlock:
     def __init__(self, code: str, filename: str = None):
         self.code = code
@@ -58,8 +59,13 @@ class Create:
         ctx = _current_context
         self.id = ctx.state_id
         ctx.state_id += 1
-
         self.initial = initial
+
+        # self.initial = initial if initial elif initial == ""
+        if self.initial:
+            self.initial = initial
+        elif type(self.initial) == str:
+            self.initial = "\"\""
         self.name = f"state{self.id}"
 
         ctx.states.append(self)
@@ -89,7 +95,7 @@ class Create:
             return f"{self.name}.set({source})"
 
         if type(fn) == str:
-            return f"{self.name}.set(`{fn}`)"
+            return f"{self.name}.set({fn})"
 
         return f"{self.name}.set({fn})"
 
@@ -273,3 +279,33 @@ class EventExpr:
 
     def to_js(self):
         return f"({self.args}) => {self.body}"
+
+class JSExpr:
+    def emit(self):
+        raise NotImplementedError
+
+
+class EventTargetValue(JSExpr):
+    def emit(self):
+        return "e.target.value"
+
+
+class Target:
+    @property
+    def value(self):
+        return "e.target.value"
+
+
+class Event:
+    def __init__(self):
+        self.target = Target()
+
+
+event = Event()
+
+class EventHandler(JSExpr):
+    def __init__(self, body):
+        self.body = body
+
+    def emit(self):
+        return f"(e) => {self.body.emit()}"
