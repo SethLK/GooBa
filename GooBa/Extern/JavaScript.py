@@ -181,16 +181,27 @@ class useRequest:
 
 
     def emit(self):
-        return f"""
-  const fetch{self.id} = useRequest();
-  useOnce(() => {{
-    fetch{self.id}.request("{self.url}", {{
-        {self._options_js()}
-    }});
-  }});
-  
-""".strip()
+        if self.method == "POST":
+            return f"""
+                          const fetch{self.id} = useRequest();
+                          useOnce(() => {{
+                            fetch{self.id}.request("{self.url}", {{
+                                {self._options_js()}
+                            }});
+                          }});
 
+                        """.strip()
+
+        else:
+            return f"""
+              const fetch{self.id} = useRequest();
+              useOnce(() => {{
+                fetch{self.id}.request("{self.url}", {{
+                    {self._options_js()}
+                }});
+              }});
+
+            """.strip()
     def to_js(self):
         return self.emit()
 
@@ -202,6 +213,10 @@ class useRequest:
 
     def value(self):
         return f"fetch{self.id}.data.get()"
+
+    def trigger(self):
+        return f"fetch{self.id}.request('{self.url}', {{{self._options_js()}}})"
+
 
 def Component(func):
     name = func.__name__[0].upper() + func.__name__[1:]

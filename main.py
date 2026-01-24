@@ -1,7 +1,7 @@
 import inspect
 
 from GooBa import Document, CreateElement, Router, CreateStyle, Fetch, Create, Component, view, \
-    Body, useRequest, GIf, GElse, G, GELIf, Loop, Fragment
+    Body, useRequest, GIf, GElse, G, GELIf, Loop, Fragment, Expr
 from GooBa.Extern import Event, event
 
 doc = Document()
@@ -96,7 +96,80 @@ def homePage():
         )
     )
 
-router.render('/', homePage())
+# @Component
+# def doing_Request():
+#     req = useRequest(
+#         url="http://localhost:3333/post",
+#         method="POST",
+#         headers={
+#             "Content-Type": "application/json"
+#         },
+#         body={
+#             "title": "Name",
+#             "content": "Age"
+#         }
+#     )
+#
+#     return CreateElement(
+#         "div",
+#         {},
+#         CreateElement("h1", {}, "Home Page"),
+#         CreateElement(
+#             "button",
+#             {"on:click": req.trigger()},
+#             "Add Item"
+#         ),
+#         G(
+#             GIf(
+#                 req.get("data"),
+#                 CreateElement(
+#                     "p",
+#                     {},
+#                     req.get("data")
+#                 )
+#             ),
+#             GElse(
+#                 CreateElement("p", {}, "Number is 10 or more")
+#             )
+#         )
+#     )
+
+@Component
+def doing_Request():
+    req = useRequest(
+        url="http://localhost:3333/post",
+        method="POST",
+        headers={
+            "Content-Type": "application/json"
+        },
+        body={
+            "title": "Name",
+            "content": "Age"
+        }
+    )
+
+    return CreateElement(
+        "div",
+        {},
+        CreateElement("h1", {}, "Home Page"),
+        CreateElement(
+            "button",
+            {"on:click": req.trigger()},
+            "Add Item"
+        ),
+        G(
+            GIf(
+                Expr(req.value()),
+                CreateElement("p", {}, "Request succeeded")
+            ),
+            GElse(
+                CreateElement("p", {}, "Waiting for response...")
+            )
+        )
+    )
+
+
+router.render('/', doing_Request())
 
 router.run('root')
 doc.build()

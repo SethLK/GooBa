@@ -55,25 +55,14 @@ class Expr:
     def __eq__(self, other): return self._bin("==", other)
     def __ne__(self, other): return self._bin("!=", other)
 
-
-# class GIf:
-#     def __init__(self, cond, value):
-#         source = inspect.getsource(cond)
-#         source = source.replace("${", "").replace("}", "")
-#         self.cond = source
-#         self.value = value
-#
-#
-#     def to_js(self):
-#         val = self.value.to_h()
-#         return f"if ({self.cond}) return {val};"
-
 class GIf:
     def __init__(self, cond, value):
         if hasattr(cond, "to_js"):
             self.cond = cond.to_js()
+        if hasattr(cond, "to_h"):
+            self.cond = cond.to_h()
         else:
-            raise TypeError("GIf condition must be an expression")
+            raise TypeError("GIf condition must be an expression or an element")
         self.value = value
 
     def to_js(self):
