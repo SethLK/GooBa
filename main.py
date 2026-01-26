@@ -160,7 +160,7 @@ def doing_Request():
         G(
             GIf(
                 Expr(req.value()),
-                CreateElement("p", {}, "Request succeeded")
+                CreateElement("p", {}, f"Request succeeded {req.get("message")}")
             ),
             GElse(
                 CreateElement("p", {}, "Waiting for response...")

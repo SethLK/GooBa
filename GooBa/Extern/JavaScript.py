@@ -184,11 +184,7 @@ class useRequest:
         if self.method == "POST":
             return f"""
                           const fetch{self.id} = useRequest();
-                          useOnce(() => {{
-                            fetch{self.id}.request("{self.url}", {{
-                                {self._options_js()}
-                            }});
-                          }});
+                          
 
                         """.strip()
 
