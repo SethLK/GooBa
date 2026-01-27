@@ -57,6 +57,7 @@ class Expr:
 
 class GIf:
     def __init__(self, cond, value):
+        cond = Expr(cond)
         if hasattr(cond, "to_js"):
             self.cond = cond.to_js()
         if hasattr(cond, "to_h"):

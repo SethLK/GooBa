@@ -145,7 +145,12 @@ class useRequest:
             options["headers"] = self.headers
 
         if self.body and self.method not in ("GET", "HEAD"):
-            options["body"] = f"JSON.stringify({self.body})"
+            data = "{"
+            for key, value in self.body.items():
+                data += f"{key}: {value}, "
+            data += "}"
+
+            options["body"] = f"JSON.stringify({data})"
 
         if self.mode:
             options["mode"] = self.mode
@@ -172,6 +177,7 @@ class useRequest:
         lines = []
 
         for key, value in opts.items():
+
             if isinstance(value, str) and not value.startswith("JSON.stringify"):
                 lines.append(f'{key}: "{value}"')
             else:

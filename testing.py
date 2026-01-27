@@ -33,10 +33,10 @@ CreateElement(
     ),
     CreateElement(
         "form",
-        { "action": "/action_page.php" },
+        { "action": "/" },
         CreateElement(
             "label",
-            { "for": "fname" },
+            { "for": "title" },
             "First name:"
         ),
         CreateElement(
@@ -46,7 +46,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "fname", "name": "fname", "value": "John" },
+            { "type": "text", "id": "title", "name": "title", "value": "Something" },
             ""
         ),
         CreateElement(
@@ -56,7 +56,7 @@ CreateElement(
         ),
         CreateElement(
             "label",
-            { "for": "lname" },
+            { "for": "content" },
             "Last name:"
         ),
         CreateElement(
@@ -66,7 +66,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "lname", "name": "lname", "value": "Doe" },
+            { "type": "text", "id": "content", "name": "content", "value": "Doe" },
             ""
         ),
         CreateElement(

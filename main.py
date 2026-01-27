@@ -159,8 +159,8 @@ def doing_Request():
         ),
         G(
             GIf(
-                Expr(req.value()),
-                CreateElement("p", {}, f"Request succeeded {req.get("message")}")
+                req.value(),
+                CreateElement("p", {}, f"Request succeeded {req.get("message")}, {req.get("data.title")}")
             ),
             GElse(
                 CreateElement("p", {}, "Waiting for response...")
@@ -168,8 +168,106 @@ def doing_Request():
         )
     )
 
+@Component
+def doing_post_with_data():
 
-router.render('/', doing_Request())
+    input_title = Create("")
+    input_content = Create("")
+
+    req = useRequest(
+            url="http://localhost:3333/post",
+            method="POST",
+            headers={
+                "Content-Type": "application/json"
+            },
+            body={
+                "title": input_title.value(),
+                "content": input_content.value()
+            }
+        )
+
+    return CreateElement(
+    "div",
+    {  },
+    CreateElement(
+        "h2",
+        {  },
+        "HTML Forms"
+    ),
+    CreateElement(
+        "form",
+        { },
+        CreateElement(
+            "label",
+            { "for": "title" },
+            "First name:"
+        ),
+        CreateElement(
+            "br",
+            {  },
+            ""
+        ),
+        CreateElement(
+            "input",
+            {
+                "type": "text",
+                "id": "title",
+                "name": "title",
+                "value": input_title.value(),
+            "on:input": input_title.set(event.target.value)
+            },
+            ""
+        ),
+        CreateElement(
+            "br",
+            {  },
+            ""
+        ),
+        CreateElement(
+            "label",
+            { "for": "content" },
+            "Last name:"
+        ),
+        CreateElement(
+            "br",
+            {  },
+            ""
+        ),
+        CreateElement(
+            "input",
+            {
+                "type": "text",
+                "id": "content",
+                "name": "content",
+                "value": input_content.value(),
+                "on:input": input_content.set(event.target.value)
+            },
+            ""
+        ),
+        CreateElement(
+            "br",
+            {  },
+            ""
+        ),
+        CreateElement(
+            "br",
+            {  },
+            ""
+        ),
+        CreateElement(
+                        "button",
+                        {"on:click": req.trigger()},
+                        "Add Item"
+                    ),
+    ),
+    CreateElement(
+        "p",
+        {  },
+        "If you click the \"Submit\" button, the form-data will be sent to a page called"
+    )
+)
+
+router.render('/', doing_post_with_data())
 
 router.run('root')
 doc.build()
