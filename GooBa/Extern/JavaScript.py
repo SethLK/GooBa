@@ -317,6 +317,9 @@ class Event:
     def __init__(self):
         self.target = Target()
 
+    def preventDefault(self):
+        return "e.preventDefault();"
+
 
 event = Event()
 

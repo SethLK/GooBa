@@ -92,6 +92,11 @@ class CreateElement:
 
                     continue
 
+                if "e.preventDefault();" in value:
+                    print(value)
+                    attrs_items.append(f'on: {{ {event_name}: (e) => {value} }}')
+                    print(f'on: {{ {event_name}: (e) => {value} }}')
+                    continue
                 else:
                     attrs_items.append(f'on: {{ {event_name}: () => {value} }}')
                     continue
