@@ -386,14 +386,19 @@ def get_posts():
                 CreateElement(
                     "div",
                     {},
-                    f"{req.get('data.content')}"
+                    Loop(
+                        req.value(),
+                        lambda hero: Fragment(
+                            CreateElement("h3", {}, f"{hero.get('title')}"),
+                            CreateElement("p", {}, f"Age: {hero.get('content')}")
+                        ),
                     ),
                 ),
             ),
             GElse(
                 CreateElement("p", {}, "No data yet")
             )
-        )
+        ))
 
 
 @Component
@@ -434,7 +439,7 @@ def create_post():
 
         G(
             GIf(req.value(),
-                CreateElement("p", {}, f"{req.get('message')}")
+                CreateElement("p", {}, f"{req.get('message')} {req.get('data')}")
             )
         )
     )
@@ -484,7 +489,7 @@ def update_post():
 
         G(
             GIf(req.value(),
-                CreateElement("p", {}, f"{req.get("data")}")
+                CreateElement("p", {}, f"{req.get('message')}")
             )
         )
     )
