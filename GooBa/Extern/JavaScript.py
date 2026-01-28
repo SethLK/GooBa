@@ -1,5 +1,6 @@
 import inspect
 import re
+from enum import StrEnum
 
 from GooBa.Condition.Condition import Expr
 # from ..Condition.Condition import Expr
@@ -99,6 +100,13 @@ class Create:
 
         return f"{self.name}.set({fn})"
 
+class Methods(StrEnum):
+    GET = "GET"
+    POST = "POST"
+    PATCH = "PATCH"
+    PUT = "PUT"
+    DELETE = "DELETE"
+
 
 class useRequest:
 
@@ -187,11 +195,9 @@ class useRequest:
 
 
     def emit(self):
-        if self.method == "POST":
+        if self.method != Methods.GET and self.method in Methods:
             return f"""
                           const fetch{self.id} = useRequest();
-                          
-
                         """.strip()
 
         else:

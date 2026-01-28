@@ -67,7 +67,9 @@ class GIf:
         self.value = value
 
     def to_js(self):
-        return f"if ({self.cond}) return {self.value.to_h()};"
+        return (f"if ({self.cond}) {{ \n "
+                f"return {self.value.to_h()}; \n "
+                f"}}")
 
 
 class GELIf:
@@ -79,7 +81,9 @@ class GELIf:
         self.value = value
 
     def to_js(self):
-        return f"else if ({self.cond}) return {self.value.to_h()};"
+        return (f"else if ({self.cond}) {{ \n "
+                f"return {self.value.to_h()}; \n "
+                f"}}")
 
 
 class GElse:
@@ -88,4 +92,6 @@ class GElse:
 
     def to_js(self):
         val = self.value.to_h()
-        return f"else return {val};"
+        return (f"else {{ \n"
+                f"return {val}; \n "
+                f"}}")
