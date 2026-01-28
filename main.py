@@ -256,7 +256,12 @@ def doing_post_with_data():
         ),
         CreateElement(
                         "button",
-                        {"on:click":  [event.preventDefault(), req.trigger() ]},
+                        {
+                            "on:click": {
+                                event.preventDefault(),
+                                req.trigger()
+                            }
+                        },
                         "Add Item"
                     ),
     ),

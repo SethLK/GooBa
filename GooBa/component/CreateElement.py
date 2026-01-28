@@ -93,9 +93,18 @@ class CreateElement:
                     continue
 
                 if "e.preventDefault();" in value:
-                    print(value)
-                    attrs_items.append(f'on: {{ {event_name}: (e) => {value} }}')
-                    print(f'on: {{ {event_name}: (e) => {value} }}')
+                    # print(f"{type(value)} -> {value}")
+                    # for v in value:
+                    #     print("->" + v)
+
+                    d_value = "{ \n"
+                    for v in value:
+                        d_value += v + "\n"
+                    d_value += "\n}"
+                    # print("d -> " + d_value)
+
+                    attrs_items.append(f'on: {{ {event_name}: (e) => {d_value} }}')
+                    # print(f'on: {{ {event_name}: (e) => {value} }}'.strip())
                     continue
                 else:
                     attrs_items.append(f'on: {{ {event_name}: () => {value} }}')
