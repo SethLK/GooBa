@@ -371,7 +371,14 @@ def get_posts():
         method="GET"
     )
 
+    # req_2 = useRequest(
+    #     url="http://localhost:8080/something.json",
+    #     method="GET",
+    # )
+
     return CreateElement(
+        "div", {},
+        CreateElement(
         "div",
         {},
         CreateElement("h2", {}, "All Posts"),
@@ -387,7 +394,7 @@ def get_posts():
                     "div",
                     {},
                     Loop(
-                        req.value(),
+                        req.value("data"),
                         lambda hero: Fragment(
                             CreateElement("h3", {}, f"{hero.get('title')}"),
                             CreateElement("p", {}, f"Age: {hero.get('content')}")
@@ -398,7 +405,19 @@ def get_posts():
             GElse(
                 CreateElement("p", {}, "No data yet")
             )
-        ))
+        )),
+        # CreateElement(
+        #     "div",
+        #     {},
+        #     Loop(
+        #         req_2.value(),
+        #         lambda hero: Fragment(
+        #             CreateElement("h3", {}, f"{hero.get('name')}"),
+        #             CreateElement("p", {}, f"Age: {hero.get('age')}")
+        #         ),
+        #     ),
+        # ),
+    )
 
 
 @Component
