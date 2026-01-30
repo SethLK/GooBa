@@ -141,7 +141,8 @@ class useRequest:
         self.referrer = referrer
         self.referrerPolicy = referrerPolicy
         self.signal = signal
-        self.triggered = False
+        self._called = False
+        self.manual = False
 
         ctx.requests.append(self)
 
@@ -196,24 +197,22 @@ class useRequest:
 
 
     def emit(self):
-        if self.method != Methods.GET and self.method in Methods:
+        if self.manual:
+        # if self.method != Methods.GET and self.method in Methods:
             return f"""
                           const fetch{self.id} = useRequest();
-                          const fetch{self.id}Triggered = Create(false);
                         """.strip()
 
-        else:
-            return f"""
-              const fetch{self.id} = useRequest();
-              fetch{self.id}Triggered.set(true); \n
-        fetch{self.id}.request('{self.url}', {{{self._options_js()}}})
-              useOnce(() => {{
-                fetch{self.id}.request("{self.url}", {{
-                    {self._options_js()}
-                }});
-              }});
+        return f"""
+          const fetch{self.id} = useRequest();
+          
+          useOnce(() => {{
+            fetch{self.id}.request("{self.url}", {{
+                {self._options_js()}
+            }});
+          }});
 
-            """.strip()
+        """.strip()
     def to_js(self):
         return self.emit()
 
@@ -229,16 +228,10 @@ class useRequest:
         else:
             return f"fetch{self.id}.data.get().{key}"
 
-    # def value(self, data):
-    #     return f"fetch{self.id}.data.get().{data}"
-
-    # def trigger(self):
-    #     self.triggered = True
-    #     return f"fetch{self.id}.request('{self.url}', {{{self._options_js()}}})"
     def trigger(self):
+        self.manual = True
         return f"""
         {{
-        fetch{self.id}Triggered.set(true); \n
         fetch{self.id}.request('{self.url}', {{{self._options_js()}}})
         }}
         """.strip()
