@@ -431,6 +431,7 @@ def get_post_by_id():
         "div",
         {},
         CreateElement("h2", {}, "All Posts"),
+                CreateElement("h3", {}, f"_id {req.get('data.id')}"),
                 CreateElement("h3", {}, f"Hi {req.get('data.title')}"),
                 CreateElement("p", {}, f"Age: {req.get('data.content')}")
         ))
