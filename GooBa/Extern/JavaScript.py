@@ -207,7 +207,7 @@ class useRequest:
           const fetch{self.id} = useRequest();
           
           useOnce(() => {{
-            fetch{self.id}.request("{self.url}", {{
+            fetch{self.id}.request(`{self.url}`, {{
                 {self._options_js()}
             }});
           }});
@@ -232,7 +232,7 @@ class useRequest:
         self.manual = True
         return f"""
         {{
-        fetch{self.id}.request('{self.url}', {{{self._options_js()}}})
+        fetch{self.id}.request(`{self.url}`, {{{self._options_js()}}})
         }}
         """.strip()
 
@@ -346,3 +346,4 @@ class EventHandler(JSExpr):
 
     def emit(self):
         return f"(e) => {self.body.emit()}"
+

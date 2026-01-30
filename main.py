@@ -1,7 +1,7 @@
 import inspect
 
 from GooBa import Document, CreateElement, Router, CreateStyle, Fetch, Create, Component, view, \
-    Body, useRequest, GIf, GElse, G, GELIf, Loop, Fragment, Expr
+    Body, useRequest, GIf, GElse, G, GELIf, Loop, Fragment, Expr, param
 from GooBa.Extern import Event, event
 
 doc = Document()
@@ -419,6 +419,21 @@ def get_posts():
         # ),
     )
 
+@Component
+def get_post_by_id():
+    req = useRequest(
+        url=f"http://localhost:3333/posts/{param('id')}",
+        method="GET",
+    )
+    return CreateElement(
+        "div", {},
+        CreateElement(
+        "div",
+        {},
+        CreateElement("h2", {}, "All Posts"),
+                CreateElement("h3", {}, f"Hi {req.get('data.title')}"),
+                CreateElement("p", {}, f"Age: {req.get('data.content')}")
+        ))
 
 @Component
 def create_post():
@@ -458,7 +473,7 @@ def create_post():
 
         G(
             GIf(req.value(),
-                CreateElement("p", {}, f"{req.get('message')} {req.get('data')}")
+                CreateElement("p", {}, f"{req.get('message')} {req.get('data.title')}")
             )
         )
     )
@@ -546,6 +561,7 @@ def delete_post():
 
 
 router.render('/', get_posts())
+router.render('/posts/:id', get_post_by_id())
 router.render('/create', create_post())
 router.render('/update', update_post())
 router.render('/delete', delete_post())

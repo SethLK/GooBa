@@ -53,11 +53,18 @@ class Router(object):
         dynamic_routes_js = []
         for route, param, content in self.dynamic_routes:
             # print(self.dynamic_routes)
-            dynamic_routes_js.append(f"""
-            page('{route}', (ctx) => {{
-                render(() => {content});
-            }});
-            """)
+            if content.startswith("function"):
+                dynamic_routes_js.append(f"""
+                                page('{route}', (ctx) => {{
+                                    render({content});
+                                }});
+                                """)
+            else:
+                dynamic_routes_js.append(f"""
+                page('{route}', (ctx) => {{
+                    render(() => {content});
+                }});
+                """)
 
         dynamic_routes_code = '\n'.join(dynamic_routes_js)
         # print(dynamic_routes_code)
@@ -89,3 +96,6 @@ import {{ createApp, h, Create, withHooks, useRequest, useOnce, hFragment }} fro
                 # Write the page.js library file
         with open('./output/page.js', 'w') as file:
             file.write(page)
+
+def param(_str):
+    return f"${{ctx.params.{_str}}}"
