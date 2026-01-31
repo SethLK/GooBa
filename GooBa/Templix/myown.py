@@ -204,7 +204,7 @@ def _gather_view_replacements(source_code: str):
         html = fix_tag_spaces(html)
         html = fix_html_void_tags(html)
         tree = parse_html_to_tree(html)
-        print("Tree ->" + tree)
+        # print("Tree ->" + tree)
         rendered = converter(tree)
         # replacement = f"return (\n{rendered}\n)"
         replacement = f"(\n{rendered}\n)"
@@ -217,7 +217,7 @@ def transform_function(source_code: str) -> str:
     Full transform: collects replacements and then applies them from end -> start to avoid index shifting.
     """
     replacements = _gather_view_replacements(source_code)
-    # print(replacements)
+    print(replacements)
     if not replacements:
         return source_code
 

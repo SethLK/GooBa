@@ -3,16 +3,6 @@ from GooBa import view, CreateElement, Fetch, Create, useRequest
 
 
 @view
-def another():
-    return (
-        <div>
-        <h1>Title - ${ctx.params.title}</h1>
-        <p>Content - ${ctx.params.content}</p>
-
-        </div>
-    )
-
-@view
 def another_2():
     title = Create("")
     content = Create("")
