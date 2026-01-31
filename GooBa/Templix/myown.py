@@ -119,7 +119,7 @@ def render_attrs_python_literal(attrs: dict) -> str:
         if isinstance(v, dict) and "__raw_js__" in v:
             js_code = v["__raw_js__"]
             # Use something.json.dumps to properly escape newlines etc inside the JS string
-            parts.append(f"{key_repr}: {{'__raw_js__': {json.dumps(js_code)}}}")
+            parts.append(f"{key_repr}:{{'__raw_js__': {json.dumps(js_code)}}}")
         else:
             parts.append(f"{key_repr}: {json.dumps(v)}")
     return "{ " + ", ".join(parts) + " }"

@@ -23,7 +23,7 @@ def another_2():
         <label for ="title"> First name: </label> <br>
         <input type="text" id="title" name="title" value="title.value()" on:input="title.set(event.target.value)"/> <br/>
         <label for ="content"> Last name: </label> <br>
-        <input type="text" id="content" name="content" value=content.value() on:input="content.set(event.target.value)" /> <br/> <br/>
+        <input type="text" id="content" name="content" value={content.value()} on:input="content.set(event.target.value)" /> <br/> <br/>
         <input type="submit" value="Submit" />
         </form>
         <p> If you click the "Submit" button, the form-data will be sent to a page called </p>
