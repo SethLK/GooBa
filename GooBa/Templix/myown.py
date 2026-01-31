@@ -204,7 +204,7 @@ def _gather_view_replacements(source_code: str):
         html = fix_tag_spaces(html)
         html = fix_html_void_tags(html)
         tree = parse_html_to_tree(html)
-        # print("Tree ->" + tree)
+        print("Tree ->" + tree)
         rendered = converter(tree)
         # replacement = f"return (\n{rendered}\n)"
         replacement = f"(\n{rendered}\n)"
@@ -237,9 +237,9 @@ def translate_file(templix_path: str, py_path: str) -> None:
         src = fh.read()
     try:
 
-        # print(src)
+        print(src)
         out = transform_function(src)
-        # print(out)
+        print(out)
     except Exception as e:
         sys.stderr.write(f"Failed to transform {templix_path}: {e}\n")
         raise
