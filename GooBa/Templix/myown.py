@@ -106,6 +106,8 @@ def convert_attributes(attrs: dict) -> dict:
             js = v[len(_JSX_PREFIX):-len(_JSX_SUFFIX)]
             js = js.replace("&quot;", '"')
             out[k] = {"__raw_js__": js}
+            # # print(js)
+            # out[k] = js
         else:
             out[k] = v
     return out
@@ -166,6 +168,12 @@ def converter(node: dict, indent: int = 0) -> str:
 
 
 def extract_return_block(code: str):
+
+    x = re.search("[a-zA-Z]", code)
+
+    print("The first white-space character is located in position:", x.start())
+    # py_code = re.search(r"def[a-zA-Z]", code)
+    # print(py_code.end())
     m = re.search(r"\breturn\s*\(", code)
     if not m:
         return None
@@ -217,7 +225,7 @@ def transform_function(source_code: str) -> str:
     Full transform: collects replacements and then applies them from end -> start to avoid index shifting.
     """
     replacements = _gather_view_replacements(source_code)
-    print(replacements)
+    # print(replacements)
     if not replacements:
         return source_code
 
@@ -237,9 +245,9 @@ def translate_file(templix_path: str, py_path: str) -> None:
         src = fh.read()
     try:
 
-        print(src)
+        # print(src)
         out = transform_function(src)
-        print(out)
+        # print(out)
     except Exception as e:
         sys.stderr.write(f"Failed to transform {templix_path}: {e}\n")
         raise

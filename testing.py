@@ -23,7 +23,7 @@ CreateElement(
     CreateElement(
         "h2",
         {  },
-        "HTML Forms"
+        "HTML Forms hi"
     ),
     CreateElement(
         "form",
@@ -40,7 +40,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "title", "name": "title", "value": "title.value()", "on:input": "title.set(event.target.value)" },
+            { "type": "text", "id": "title", "name": "title", "value":{'__raw_js__': "title.value()"}, "on:input":{'__raw_js__': "title.set(event.target.value)"} },
             ""
         ),
         CreateElement(
@@ -60,7 +60,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "content", "name": "content", "value": "content.value()", "on:input": "content.set(event.target.value)" },
+            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
             ""
         ),
         CreateElement(
@@ -85,7 +85,9 @@ CreateElement(
         "If you click the \"Submit\" button, the form-data will be sent to a page called"
     )
 )
-)           {  },
+)eElement(
+            "br",
+            {  },
             ""
         ),
         CreateElement(
@@ -100,7 +102,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "content", "name": "content", "value": "content.value()", "on:input": "content.set(event.target.value)" },
+            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
             ""
         ),
         CreateElement(
@@ -125,7 +127,9 @@ CreateElement(
         "If you click the \"Submit\" button, the form-data will be sent to a page called"
     )
 )
-)           {  },
+)eElement(
+            "br",
+            {  },
             ""
         ),
         CreateElement(
@@ -140,7 +144,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "content", "name": "content", "value": "content.value()", "on:input": "content.set(event.target.value)" },
+            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
             ""
         ),
         CreateElement(
@@ -165,7 +169,9 @@ CreateElement(
         "If you click the \"Submit\" button, the form-data will be sent to a page called"
     )
 )
-)           {  },
+)eElement(
+            "br",
+            {  },
             ""
         ),
         CreateElement(
@@ -180,7 +186,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "content", "name": "content", "value": "content.value()", "on:input": "content.set(event.target.value)" },
+            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
             ""
         ),
         CreateElement(
@@ -205,7 +211,9 @@ CreateElement(
         "If you click the \"Submit\" button, the form-data will be sent to a page called"
     )
 )
-)           {  },
+)eElement(
+            "br",
+            {  },
             ""
         ),
         CreateElement(
@@ -220,7 +228,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "content", "name": "content", "value": "content.value()", "on:input": "content.set(event.target.value)" },
+            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
             ""
         ),
         CreateElement(
@@ -245,7 +253,9 @@ CreateElement(
         "If you click the \"Submit\" button, the form-data will be sent to a page called"
     )
 )
-)           {  },
+)eElement(
+            "br",
+            {  },
             ""
         ),
         CreateElement(
@@ -260,7 +270,7 @@ CreateElement(
         ),
         CreateElement(
             "input",
-            { "type": "text", "id": "content", "name": "content", "value": "content.value()", "on:input": "content.set(event.target.value)" },
+            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
             ""
         ),
         CreateElement(
