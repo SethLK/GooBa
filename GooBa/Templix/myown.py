@@ -167,6 +167,8 @@ def converter(node: dict, indent: int = 0) -> str:
 
 def extract_function_body(code):
     import ast, textwrap
+
+    code = re.sub(r"\breturn\s*\(.*", "", code, flags=re.S)
     code = textwrap.dedent(code).strip()
     tree = ast.parse(code)
 
