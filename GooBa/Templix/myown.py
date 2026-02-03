@@ -182,34 +182,11 @@ def converter(node: dict, indent: int = 0) -> str:
 #                 if not isinstance(stmt, ast.Return)
 #             )
 
-# def extract_function_body(code):
-#     import ast, textwrap, re
-#
-#     # Remove the JSX return block BEFORE parsing
-#     code = re.sub(r"\breturn\s*\(.*", "", code, flags=re.S)
-#
-#     code = textwrap.dedent(code).strip()
-#
-#     if not code:
-#         return ""
-#
-#     tree = ast.parse(code)
-#
-#     for node in tree.body:
-#         if isinstance(node, ast.FunctionDef):
-#             return "\n".join(
-#                 ast.unparse(stmt)
-#                 for stmt in node.body
-#             )
-#     return ""
-
 def extract_function_body(code):
-    import ast, textwrap
+    import ast, textwrap, re
 
-    info = extract_return_block(code)
-    if info:
-        start, _, end, _ = info
-        code = code[:start] + code[end:]
+    # Remove the JSX return block BEFORE parsing
+    code = re.sub(r"\breturn\s*\(.*", "", code, flags=re.S)
 
     code = textwrap.dedent(code).strip()
 
@@ -223,9 +200,7 @@ def extract_function_body(code):
             return "\n".join(
                 ast.unparse(stmt)
                 for stmt in node.body
-                if not isinstance(stmt, ast.Return)
             )
-
     return ""
 
 
