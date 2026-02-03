@@ -182,13 +182,14 @@ def extract_return_block(code: str):
     # x = re.search("[a-zA-Z]", code)
     #
     # print("The first white-space character is located in position:", x.start())
-    tree = ast.parse(code)
-
-    for node in tree.body:
-        if isinstance(node, ast.FunctionDef):
-            for stmt in node.body:
-                if not isinstance(stmt, ast.Return):
-                    print(ast.unparse(stmt))
+    # tree = ast.parse(code)
+    #
+    # for node in tree.body:
+    #     if isinstance(node, ast.FunctionDef):
+    #         for stmt in node.body:
+    #             if not isinstance(stmt, ast.Return):
+    #                 print(ast.unparse(stmt))
+    print(extract_function_body(code))
 
     m = re.search(r"\breturn\s*\(", code)
     if not m:
