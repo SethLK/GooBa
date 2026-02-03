@@ -166,7 +166,8 @@ def converter(node: dict, indent: int = 0) -> str:
     return out
 
 def extract_function_body(code):
-    import ast
+    import ast, textwrap
+    code = textwrap.dedent(code).strip()
     tree = ast.parse(code)
 
     for node in tree.body:
