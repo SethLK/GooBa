@@ -1,5 +1,4 @@
-
-
+import ast
 import re
 import sys
 import json
@@ -166,14 +165,31 @@ def converter(node: dict, indent: int = 0) -> str:
     out += f"{tab})"
     return out
 
+def extract_function_body(code):
+    import ast
+    tree = ast.parse(code)
+
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            return "\n".join(
+                ast.unparse(stmt)
+                for stmt in node.body
+                if not isinstance(stmt, ast.Return)
+            )
 
 def extract_return_block(code: str):
 
-    x = re.search("[a-zA-Z]", code)
+    # x = re.search("[a-zA-Z]", code)
+    #
+    # print("The first white-space character is located in position:", x.start())
+    tree = ast.parse(code)
 
-    print("The first white-space character is located in position:", x.start())
-    # py_code = re.search(r"def[a-zA-Z]", code)
-    # print(py_code.end())
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            for stmt in node.body:
+                if not isinstance(stmt, ast.Return):
+                    print(ast.unparse(stmt))
+
     m = re.search(r"\breturn\s*\(", code)
     if not m:
         return None
@@ -267,3 +283,14 @@ if __name__ == "__main__":
     dst = sys.argv[2]
     translate_file(src, dst)
     print(f"Transformed {src} -> {dst}")
+
+
+
+
+txt = """
+def somefuntion():
+    something = 1
+    hi = "Helloo"
+    print(hi)
+    return something
+"""
