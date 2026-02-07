@@ -1,7 +1,6 @@
 
 from GooBa import view, CreateElement, Fetch, Create, useRequest
 
-
 @view
 def another_2():
     title = Create("")

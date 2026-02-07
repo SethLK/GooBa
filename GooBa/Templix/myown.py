@@ -182,13 +182,18 @@ def converter(node: dict, indent: int = 0) -> str:
 #                 if not isinstance(stmt, ast.Return)
 #             )
 
-def extract_function_body(code):
+
+def extract_function_body(code, repl):
+    code = f"""{code}"""
+    print(code)
     import ast, textwrap, re
 
     # Remove the JSX return block BEFORE parsing
-    code = re.sub(r"\breturn\s*\(.*", "", code, flags=re.S)
+    code = code.replace(repl, "")
+
 
     code = textwrap.dedent(code).strip()
+    print("New -> " + code)
 
     if not code:
         return ""
@@ -204,8 +209,43 @@ def extract_function_body(code):
     return ""
 
 
-def extract_return_block(code: str):
 
+# import ast
+#
+# def extract_function_body_without_return(code: str):
+#     tree = ast.parse(code)
+#
+#     func = tree.body[0]   # assume first node is function
+#     assert isinstance(func, ast.FunctionDef)
+#
+#     kept = []
+#     for node in func.body:
+#         if not isinstance(node, ast.Return):
+#             kept.append(node)
+#
+#     return ast.unparse(ast.Module(body=kept, type_ignores=[]))
+
+import ast
+import textwrap
+
+def extract_function_body_without_return(code: str):
+    code = textwrap.dedent(code)
+
+    tree = ast.parse(code)
+
+    func = tree.body[0]
+    assert isinstance(func, ast.FunctionDef)
+
+    kept = []
+    for node in func.body:
+        if not isinstance(node, ast.Return):
+            kept.append(node)
+
+    return ast.unparse(ast.Module(body=kept, type_ignores=[]))
+
+
+def extract_return_block(code: str):
+    print("Donno" + extract_function_body_without_return(code))
     # x = re.search("[a-zA-Z]", code)
     #
     # print("The first white-space character is located in position:", x.start())
@@ -216,9 +256,10 @@ def extract_return_block(code: str):
     #         for stmt in node.body:
     #             if not isinstance(stmt, ast.Return):
     #                 print(ast.unparse(stmt))
-    print(extract_function_body(code))
+    # print(extract_function_body(code))
 
     m = re.search(r"\breturn\s*\(", code)
+    # print("Code ->" + code)
     if not m:
         return None
     start_paren = m.end() - 1  # position of '('
@@ -235,6 +276,7 @@ def extract_return_block(code: str):
         raise ValueError("Unbalanced parentheses in return(...) block")
     # block_text excludes the outer parentheses
     block_text = code[start_paren + 1: i - 1]
+
     return (m.start(), start_paren, i, block_text)
 
 def _gather_view_replacements(source_code: str):
