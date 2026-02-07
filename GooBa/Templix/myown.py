@@ -228,20 +228,72 @@ def extract_function_body(code, repl):
 import ast
 import textwrap
 
+def strip_return_block(code: str):
+    m = re.search(r"\breturn\s*\(", code)
+    if not m:
+        return code
+
+    start = m.start()
+
+    start_paren = m.end() - 1
+    i = start_paren + 1
+    depth = 1
+
+    while i < len(code) and depth > 0:
+        if code[i] == "(":
+            depth += 1
+        elif code[i] == ")":
+            depth -= 1
+        i += 1
+
+    if depth != 0:
+        raise ValueError("Unbalanced return parentheses")
+
+    return code[:start] + "\n"
+
+
+# def extract_function_body_without_return(code: str):
+#     code = textwrap.dedent(code)
+#
+#     tree = ast.parse(code)
+#
+#     func = tree.body[0]
+#     assert isinstance(func, ast.FunctionDef)
+#
+#     kept = []
+#     for node in func.body:
+#         if not isinstance(node, ast.Return):
+#             kept.append(node)
+#
+#     return ast.unparse(ast.Module(body=kept, type_ignores=[]))
+
+# def extract_function_body_without_return(code: str):
+#     code = strip_return_block(code)
+#     code = textwrap.dedent(code)
+#
+#     tree = ast.parse(code)
+#
+#     func = tree.body[0]
+#     assert isinstance(func, ast.FunctionDef)
+#
+#     return ast.unparse(ast.Module(body=func.body, type_ignores=[]))
+
 def extract_function_body_without_return(code: str):
-    code = textwrap.dedent(code)
+    code = strip_return_block(code)
+    code = textwrap.dedent(code).strip()
+
+    if not code:
+        return ""
 
     tree = ast.parse(code)
 
-    func = tree.body[0]
-    assert isinstance(func, ast.FunctionDef)
+    # Case 1: full function present
+    if len(tree.body) == 1 and isinstance(tree.body[0], ast.FunctionDef):
+        func = tree.body[0]
+        return "\n".join(ast.unparse(stmt) for stmt in func.body)
 
-    kept = []
-    for node in func.body:
-        if not isinstance(node, ast.Return):
-            kept.append(node)
-
-    return ast.unparse(ast.Module(body=kept, type_ignores=[]))
+    # Case 2: raw code block (already inside function)
+    return "\n".join(ast.unparse(stmt) for stmt in tree.body)
 
 
 def extract_return_block(code: str):
