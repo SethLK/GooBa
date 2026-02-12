@@ -278,22 +278,22 @@ def strip_return_block(code: str):
 #
 #     return ast.unparse(ast.Module(body=func.body, type_ignores=[]))
 
-def extract_function_body_without_return(code: str):
-    code = strip_return_block(code)
-    code = textwrap.dedent(code).strip()
-
-    if not code:
-        return ""
-
-    tree = ast.parse(code)
-
-    # Case 1: full function present
-    if len(tree.body) == 1 and isinstance(tree.body[0], ast.FunctionDef):
-        func = tree.body[0]
-        return "\n".join(ast.unparse(stmt) for stmt in func.body)
-
-    # Case 2: raw code block (already inside function)
-    return "\n".join(ast.unparse(stmt) for stmt in tree.body)
+# def extract_function_body_without_return(code: str):
+#     code = strip_return_block(code)
+#     code = textwrap.dedent(code).strip()
+#
+#     if not code:
+#         return ""
+#
+#     tree = ast.parse(code)
+#
+#     # Case 1: full function present
+#     if len(tree.body) == 1 and isinstance(tree.body[0], ast.FunctionDef):
+#         func = tree.body[0]
+#         return "\n".join(ast.unparse(stmt) for stmt in func.body)
+#
+#     # Case 2: raw code block (already inside function)
+#     return "\n".join(ast.unparse(stmt) for stmt in tree.body)
 
 
 def extract_return_block(code: str):
