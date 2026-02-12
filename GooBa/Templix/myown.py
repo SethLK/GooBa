@@ -209,6 +209,23 @@ def extract_function_body(code, repl):
     return ""
 
 
+def extract_statements_before_return(code: str):
+    out = []
+    lines = code.splitlines()
+
+    for line in lines:
+        s = line.strip()
+
+        if s.startswith("def "):
+            continue
+
+        if s.startswith("return"):
+            break
+
+        if s:
+            out.append(s)
+
+    return "\n".join(out)
 
 # import ast
 #
@@ -295,9 +312,37 @@ def strip_return_block(code: str):
 #     # Case 2: raw code block (already inside function)
 #     return "\n".join(ast.unparse(stmt) for stmt in tree.body)
 
+def find_view_functions(src: str):
+    pattern = re.compile(r"@view\s+def\s+\w+\s*\(.*?\):", re.S)
+    matches = []
+
+    for m in pattern.finditer(src):
+        start = m.start()
+
+        # find indentation
+        line_start = src.rfind("\n", 0, start) + 1
+        indent = len(src[line_start:]) - len(src[line_start:].lstrip())
+
+        lines = src[line_start:].splitlines()
+        block = []
+
+        for line in lines:
+            if line.strip() == "":
+                block.append(line)
+                continue
+            curr_indent = len(line) - len(line.lstrip())
+            if curr_indent < indent:
+                break
+            block.append(line)
+
+        full_block = "\n".join(block)
+        matches.append((line_start, line_start + len(full_block), full_block))
+
+    return matches
+
 
 def extract_return_block(code: str):
-    print("Donno" + extract_function_body_without_return(code))
+    # print("Donno" + extract_statements_before_return(code))
     # x = re.search("[a-zA-Z]", code)
     #
     # print("The first white-space character is located in position:", x.start())
@@ -331,12 +376,22 @@ def extract_return_block(code: str):
 
     return (m.start(), start_paren, i, block_text)
 
+
+# def rebuild_function(source_code: str, rendered_jsx: str):
+# def rebuild_function(source_code: str):
+#     logic = extract_statements_before_return(source_code)
+#     return f"""{logic}
+# """
+
+
 def _gather_view_replacements(source_code: str):
     replacements = []
-    view_pattern = re.compile(r"\s*:", flags=re.M)
+    # view_pattern = re.compile(r"\s*:", flags=re.M)
+    view_pattern = re.compile(r"@view\s+def\s+\w+\s*\(", flags=re.M)
+
     for vm in view_pattern.finditer(source_code):
         search_start = vm.end()
-        tail = source_code[search_start:]
+        tail = source_code[search_start+7:]
         info = extract_return_block(tail)
         if not info:
             continue
@@ -352,26 +407,77 @@ def _gather_view_replacements(source_code: str):
         tree = parse_html_to_tree(html)
         # print("Tree ->" + tree)
         rendered = converter(tree)
+        print("Rendered -> " + rendered)
         # replacement = f"return (\n{rendered}\n)"
-        replacement = f"(\n{rendered}\n)"
+        # replacement = f"(\n{rendered}\n)"
+        # logic = extract_statements_before_return(source_code)
+        print("Tail -> " +tail)
+        logic = extract_statements_before_return(tail)
+
+        print("Logic -> " + logic)
+        replacement = f"\nreturn (\n{rendered}\n)\n"
+        print("Replacement -> " + replacement)
+
         replacements.append((abs_paren_start, abs_paren_end, replacement))
+
+    # print("Replacements -> " + [print(repl) for repl in replacements])
+    print("Replacements ->")
+    for repl in replacements:
+        print(repl)
+
     return replacements
 
+def transform_view_function(fn_code: str) -> str:
+    ret = extract_return_block(fn_code)
+    if not ret:
+        return fn_code
+
+    html = ret[3]
+    html = remove_html_comments(html)
+    html = preprocess_jsx_attributes(html)
+    html = fix_tag_spaces(html)
+    html = fix_html_void_tags(html)
+
+    tree = parse_html_to_tree(html)
+    rendered = converter(tree)
+
+    logic = extract_statements_before_return(fn_code)
+
+    return f"""{logic}
+
+    return (
+{rendered}
+    )
+"""
+
+#
+# def transform_function(source_code: str) -> str:
+#     """
+#     Full transform: collects replacements and then applies them from end -> start to avoid index shifting.
+#     """
+#     replacements = _gather_view_replacements(source_code)
+#     print("Source -> " + source_code)
+#     # print(replacements)
+#     if not replacements:
+#         return source_code
+#
+#     # Apply replacements from end to start so indices remain valid
+#     new_code = source_code
+#     for start_idx, end_idx, replacement in sorted(replacements, key=lambda x: x[0], reverse=True):
+#         new_code = new_code[:start_idx] + replacement + new_code[end_idx:]
+#
+#     print("New Code -> " + new_code)
+#
+#     return new_code
 
 def transform_function(source_code: str) -> str:
-    """
-    Full transform: collects replacements and then applies them from end -> start to avoid index shifting.
-    """
-    replacements = _gather_view_replacements(source_code)
-    # print(replacements)
-    if not replacements:
-        return source_code
+    matches = find_view_functions(source_code)
 
-    # Apply replacements from end to start so indices remain valid
-    new_code = source_code
-    for start_idx, end_idx, replacement in sorted(replacements, key=lambda x: x[0], reverse=True):
-        new_code = new_code[:start_idx] + replacement + new_code[end_idx:]
-    return new_code
+    for start, end, block in reversed(matches):
+        new_block = transform_view_function(block)
+        source_code = source_code[:start] + new_block + source_code[end:]
+
+    return source_code
 
 
 # ---------------------------

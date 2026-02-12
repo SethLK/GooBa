@@ -1,21 +1,19 @@
 
 from GooBa import view, CreateElement, Fetch, Create, useRequest
 
-
 @view
-def another_2():
-    title = Create("")
-    content = Create("")
+title = Create("")
+content = Create("")
+req = useRequest(
+url="http://localhost:3333/posts",
+method="POST",
+headers={"Content-Type": "application/json"},
+body={
+"title": title.value(),
+"content": content.value()
+}
+)
 
-    req = useRequest(
-        url="http://localhost:3333/posts",
-        method="POST",
-        headers={"Content-Type": "application/json"},
-        body={
-            "title": title.value(),
-            "content": content.value()
-        }
-    )
     return (
 CreateElement(
     "div",
@@ -85,214 +83,4 @@ CreateElement(
         "If you click the \"Submit\" button, the form-data will be sent to a page called"
     )
 )
-)eElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "label",
-            { "for": "content" },
-            "Last name:"
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "submit", "value": "Submit" },
-            ""
-        )
-    ),
-    CreateElement(
-        "p",
-        {  },
-        "If you click the \"Submit\" button, the form-data will be sent to a page called"
     )
-)
-)eElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "label",
-            { "for": "content" },
-            "Last name:"
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "submit", "value": "Submit" },
-            ""
-        )
-    ),
-    CreateElement(
-        "p",
-        {  },
-        "If you click the \"Submit\" button, the form-data will be sent to a page called"
-    )
-)
-)eElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "label",
-            { "for": "content" },
-            "Last name:"
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "submit", "value": "Submit" },
-            ""
-        )
-    ),
-    CreateElement(
-        "p",
-        {  },
-        "If you click the \"Submit\" button, the form-data will be sent to a page called"
-    )
-)
-)eElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "label",
-            { "for": "content" },
-            "Last name:"
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "submit", "value": "Submit" },
-            ""
-        )
-    ),
-    CreateElement(
-        "p",
-        {  },
-        "If you click the \"Submit\" button, the form-data will be sent to a page called"
-    )
-)
-)eElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "label",
-            { "for": "content" },
-            "Last name:"
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "text", "id": "content", "name": "content", "value":{'__raw_js__': "content.value()"}, "on:input":{'__raw_js__': "content.set(event.target.value)"} },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "br",
-            {  },
-            ""
-        ),
-        CreateElement(
-            "input",
-            { "type": "submit", "value": "Submit" },
-            ""
-        )
-    ),
-    CreateElement(
-        "p",
-        {  },
-        "If you click the \"Submit\" button, the form-data will be sent to a page called"
-    )
-)
-)

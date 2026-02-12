@@ -153,20 +153,29 @@ def somefuntion():
 """.strip()
 
 
-transform_function(txt)
+# transform_function(txt)
 
 txt_list = txt.splitlines()
 # print(txt_list)
 num_to_remove = 1
-for i in range(len(txt_list)-2):
-    txt_list[i] = txt_list[i].strip()
-    # print(txt_list[i])
-    if txt_list[i][:3] == "def":
-        txt_list.pop(i)
+def extract_statements_before_return(code: str):
+    out = []
+    lines = code.splitlines()
 
-    if txt_list[i][:6] == "return":
-        break
+    for line in lines:
+        s = line.strip()
 
-    print(txt_list[i])
+        if s.startswith("def "):
+            continue
+
+        if s.startswith("return"):
+            break
+
+        if s:
+            out.append(s)
+
+    return "\n".join(out)
+
+print(extract_statements_before_return(txt))
 
 
